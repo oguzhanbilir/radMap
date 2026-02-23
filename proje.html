@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Proje Süreci | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero hero-with-bg">
+            <div class="hero-bg">
+                <img src="images/drone/dji avata ve kurulu devrenin uçuş görüntüsü.jpg" alt="" onerror="this.parentElement.classList.add('no-img')">
+            </div>
+            <div class="hero-content">
+                <h1>Proje Gelişim Süreci</h1>
+                <p class="tagline">Fikirden 3B Haritalandırmaya RadMap Yolculuğu</p>
+            </div>
+        </section>
+
+        <section class="proje-section">
+            <h2>Proje Görüntüleri</h2>
+            <p class="section-desc">Rapor, sunum ve saha çalışmalarından görüntüler.</p>
+            <div class="proje-slider">
+                <button type="button" class="slider-btn slider-prev" aria-label="Önceki">‹</button>
+                <div class="slider-track">
+                    <div class="slider-slide active"><img src="images/drone/dji avata ve kurulu devrenin uçuş görüntüsü.jpg" alt="Drone montajı" onerror="this.parentElement.classList.add('no-img')"></div>
+                    <div class="slider-slide"><img src="images/drone/dji mavic 3 pro modeli ile devre hazır hali.JPG" alt="Devre hazır hali" onerror="this.parentElement.classList.add('no-img')"></div>
+                    <div class="slider-slide"><img src="images/drone/okul kapalı alanda uçurulan drone kamera görüntüsü.jpg" alt="Saha ölçümü" onerror="this.parentElement.classList.add('no-img')"></div>
+                    <div class="slider-slide"><img src="images/proje/hastane ortamı devre doğrulama kontrol ölçümü.jpg" alt="Nükleer Tıp doğrulaması" onerror="this.parentElement.classList.add('no-img')"></div>
+                    <div class="slider-slide"><img src="images/3b-harita/ölçüm sonuçlarının 3b haritalandırılması.png" alt="3B haritalandırma" onerror="this.parentElement.classList.add('no-img')"></div>
+                    <div class="slider-slide"><img src="images/proje/iç mekan pce-ram10 ile ölçüm.png" alt="İç mekan ölçüm" onerror="this.parentElement.classList.add('no-img')"></div>
+                </div>
+                <button type="button" class="slider-btn slider-next" aria-label="Sonraki">›</button>
+                <div class="slider-dots"></div>
+            </div>
+        </section>
+
+        <section class="proje-section timeline-section">
+            <h2>Gelişim Aşamaları</h2>
+            <p class="section-desc">Projenin fikir aşamasından 3B haritalandırmaya kadar geçen süreç.</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-num">1</span>
+                    <div class="timeline-content">
+                        <h3>Fikir ve Tema Seçimi</h3>
+                        <p>"Temiz Gezegen, Sağlıklı İnsanlar" teması kapsamında radyasyon ölçümü fikri belirlendi. Görünmez çevre tehdidini görünür kılmak hedeflendi.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">2</span>
+                    <div class="timeline-content">
+                        <h3>Donanım Tasarımı</h3>
+                        <p>Arduino Nano (ana kart), Geiger-Müller sensörü, OLED SSD1306 ekran, GPS NEO-6M ve SD kart modülleri seçildi. Bağlantı şeması ve pin atamaları planlandı.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">3</span>
+                    <div class="timeline-content">
+                        <h3>Yazılım Geliştirme</h3>
+                        <p>CPM ve µSv/h hesaplama algoritması, hareketli ortalama yöntemi ve PictoBlox entegrasyonu tamamlandı. geiger iha.sb3 projesi oluşturuldu.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">4</span>
+                    <div class="timeline-content">
+                        <h3>Drone Entegrasyonu</h3>
+                        <p>DJI Avata 2 gövdesine muhafaza kutusu montajı. Ağırlık merkezi dikkate alınarak kelepçe ve destek elemanları kullanıldı.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">5</span>
+                    <div class="timeline-content">
+                        <h3>Saha Testleri</h3>
+                        <p>Okul bahçesinde açık alan ölçümleri, kapalı alan testleri ve drone uçuş testleri gerçekleştirildi. GPS verileriyle eşleştirme yapıldı.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">6</span>
+                    <div class="timeline-content">
+                        <h3>Doğrulama – Nükleer Tıp</h3>
+                        <p>SANKO Üniversitesi Hastanesi Nükleer Tıp Bölümü ile iş birliği. Teknesyum-99m kaynağı ile profesyonel cihazla karşılaştırmalı test. 9,49 µSv/saat ölçümü, iki cihaz uyumlu.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <span class="timeline-num">7</span>
+                    <div class="timeline-content">
+                        <h3>3B Haritalandırma</h3>
+                        <p>GPS koordinatları ve yükseklik bilgisi kullanılarak radyasyonun 3 boyutlu mekânsal dağılımı oluşturuldu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+    <script>
+        (function() {
+            const track = document.querySelector('.proje-slider .slider-track');
+            const slides = document.querySelectorAll('.proje-slider .slider-slide');
+            const prevBtn = document.querySelector('.slider-prev');
+            const nextBtn = document.querySelector('.slider-next');
+            const dotsContainer = document.querySelector('.proje-slider .slider-dots');
+            let current = 0;
+            const total = slides.length;
+
+            function goTo(i) {
+                current = (i + total) % total;
+                slides.forEach((s, i) => s.classList.toggle('active', i === current));
+                dotsContainer.querySelectorAll('.slider-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+            }
+
+            slides.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Görsel ' + (i + 1));
+                dot.addEventListener('click', () => goTo(i));
+                dotsContainer.appendChild(dot);
+            });
+
+            prevBtn?.addEventListener('click', () => goTo(current - 1));
+            nextBtn?.addEventListener('click', () => goTo(current + 1));
+
+            let autoplay = setInterval(() => goTo(current + 1), 5000);
+            document.querySelector('.proje-slider')?.addEventListener('mouseenter', () => clearInterval(autoplay));
+            document.querySelector('.proje-slider')?.addEventListener('mouseleave', () => { autoplay = setInterval(() => goTo(current + 1), 5000); });
+        })();
+    </script>
+</body>
+</html>

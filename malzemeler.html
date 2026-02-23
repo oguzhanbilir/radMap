@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Kullanılan Malzemeler | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Kullanılan Malzemeler</h1>
+            <p class="tagline">RadMap Ölçüm Sistemi Donanım Bileşenleri</p>
+        </section>
+
+        <section>
+            <h2>Ana Bileşenler</h2>
+            <div class="modules-grid">
+                <div class="module-card">
+                    <img src="images/components/xiao.png" alt="Xiao nRF52840 Sense" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">Xiao nRF52840</span>
+                    <h3>Xiao nRF52840 Sense</h3>
+                    <p class="module-role">Ana kontrol kartı</p>
+                    <p>Bluetooth 5.0 destekli, düşük enerji tüketimli, entegre IMU içeren mikrodenetleyici. Sensör verilerini okuyup kaydeden ana birim.</p>
+                </div>
+                <div class="module-card">
+                    <img src="images/components/geiger.jpg" alt="PCE-RAM10 Geiger-Müller" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">Geiger-Müller</span>
+                    <h3>PCE-RAM10 Geiger-Müller Sayacı</h3>
+                    <p class="module-role">Radyasyon algılama</p>
+                    <p>Alfa, beta ve gama radyasyonunu algılayan çevresel doz hızı ölçüm cihazı. Ölçümler µSv/saat cinsinden; TTL çıkış ile nabız iletimi.</p>
+                </div>
+                <div class="module-card">
+                    <img src="images/components/oled.png" alt="OLED Ekran" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">OLED</span>
+                    <h3>0.96" OLED Ekran</h3>
+                    <p class="module-role">Anlık görüntüleme</p>
+                    <p>I2C protokolü ile bağlı. Anlık µSv/h değerlerini kullanıcıya görsel olarak sunar.</p>
+                </div>
+                <div class="module-card">
+                    <img src="images/components/gps.jpg" alt="GPS Modülü" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">GPS</span>
+                    <h3>GPS Modülü</h3>
+                    <p class="module-role">Konum ve yükseklik</p>
+                    <p>UART arayüzü; enlem, boylam ve yükseklik verisi sağlar. Radyasyon verilerini konum ile eşleştirir.</p>
+                </div>
+                <div class="module-card">
+                    <img src="images/components/sd-kart.png" alt="MicroSD Kart" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">MicroSD</span>
+                    <h3>MicroSD Kart Okuyucu</h3>
+                    <p class="module-role">Veri kaydı</p>
+                    <p>SPI protokolü. Tüm ölçüm verilerini CSV formatında saklar.</p>
+                </div>
+                <div class="module-card">
+                    <img src="images/components/3d muhafaza kutusu.png" alt="3D Muhafaza Kutusu" class="module-img" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">Muhafaza</span>
+                    <h3>3D Yazıcı Muhafaza Kutusu</h3>
+                    <p class="module-role">Koruma ve montaj</p>
+                    <p>Özel tasarlanmış, 3B baskı ile üretilmiş. Tüm elektronik sistemin korunması ve drone'a güvenli montajı.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Taşıyıcı Platform</h2>
+            <div class="drone-platform-card">
+                <div class="drone-platform-image">
+                    <img src="images/drone/dji-avata-2.jpg" alt="DJI Avata 2" onerror="this.style.display='none'; this.nextElementSibling?.classList.add('show')">
+                    <span class="module-placeholder">DJI Avata 2</span>
+                </div>
+                <div class="drone-platform-info">
+                    <h3>DJI Avata 2 İHA</h3>
+                    <p class="module-role">Taşıyıcı platform</p>
+                    <p>Sistemi taşıyan platform. Uçuş esnasında fiziksel taşıyıcılık görevi; veri toplama sistemi harici Li-Po batarya ile bağımsız çalışır.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Devre Kurulumu</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="images/drone/dji mavic 3 pro modeli ile devre hazır hali.JPG" alt="Devre hazır hali" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/proje/iç mekan pce-ram10 ile ölçüm.png" alt="İç mekan ölçüm" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1</p>
+    </footer>
+</body>
+</html>
