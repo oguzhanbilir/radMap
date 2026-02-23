@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>RadMap – Drone Tabanlı 3B Radyasyon Haritalama Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero hero-with-bg">
+            <div class="hero-bg">
+                <img src="images/drone/dji avata ve kurulu devrenin uçuş görüntüsü.jpg" alt="" onerror="this.parentElement.classList.add('no-img')">
+            </div>
+            <div class="hero-content">
+                <h1>RadMap</h1>
+                <p class="tagline">Drone Tabanlı 3B Radyasyon Haritalama Sistemi</p>
+                <p class="theme">Görünmez Radyasyonu Görünür Kılıyoruz</p>
+            </div>
+        </section>
+
+        <section class="cozum-section">
+            <h2>Çözüm</h2>
+            <div class="cozum-compare">
+                <div class="cozum-box cozum-manuel">
+                    <span class="cozum-label">Manuel (Riskli)</span>
+                    <p>Geleneksel radyasyon ölçümü, operatörün tehlikeli alanlara fiziksel olarak girmesini gerektirir. Yüksek doz bölgelerinde insan maruziyeti riski taşır.</p>
+                </div>
+                <div class="cozum-box cozum-otonom">
+                    <span class="cozum-label">Otonom (Güvenli)</span>
+                    <p>RadMap, insansız hava aracı ile uzaktan ölçüm yaparak ALARA prensibine uygun, güvenli veri toplama sağlar. İnsan maruziyeti minimuma indirilir.</p>
+                </div>
+            </div>
+            <div class="cozum-principle">
+                <h3>Sistemin Çalışma Prensibi</h3>
+                <p>Geiger-Müller sayacı ortamdan gelen iyonlaştırıcı radyasyonu algılar ve bu etkileşimler elektromanyetik darbeler hâline dönüştürülerek mikrodenetleyiciye iletilir. Aynı anda GPS modülü konum bilgisini sağlar. Mikrodenetleyici, radyasyon ve konum verilerini mikro SD karta kaydeder ve eş zamanlı olarak OLED ekranda kullanıcıya sunar.</p>
+            </div>
+            <ul class="cozum-benefits">
+                <li>ALARA prensibine uygun, güvenli veri toplama</li>
+                <li>İyonlaştırıcı radyasyonun konuma bağlı ölçümü</li>
+                <li>Radyasyonun 3B mekânsal dağılımını belirleme</li>
+                <li>Taşınabilir ve otomatik ölçüm sistemi</li>
+                <li>İnsansız hava aracı ile uzaktan ölçüm</li>
+            </ul>
+        </section>
+
+        <section class="innovation">
+            <h2>Proje Özeti</h2>
+            <p>RadMap, iyonlaştırıcı radyasyonun çevresel ortamlardaki mekânsal dağılımını analiz etmek amacıyla geliştirilmiş taşınabilir bir ölçüm sistemidir. Geiger-Müller sensörü, mikrodenetleyici, GPS modülü, OLED ekran ve SD kart ünitesi entegrasyonu ile oluşturulan sistem, DJI Avata 2 insansız hava aracına monte edilebilir şekilde tasarlanmıştır.</p>
+            <p>Açık alanda (okul bahçesi) ve kapalı alanlarda (bodrum, zemin kat, üst katlar) radyasyon doz hızı ölçümleri gerçekleştirilmiş; veriler GPS ile eşleştirilerek Google Earth üzerinde görselleştirilmiştir.</p>
+            <div class="features features-index">
+                <div class="feature">
+                    <div class="feature-icon-wrap"><span class="icon">🚁</span></div>
+                    <h3>Havadan Haritalama</h3>
+                    <p>Drone ile geniş alan taraması, GPS ve yükseklik verisiyle 3B dağılım</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon-wrap"><span class="icon">🛡️</span></div>
+                    <h3>ALARA Prensibi</h3>
+                    <p>İnsan maruziyetini azaltan, güvenli ölçüm platformu</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon-wrap"><span class="icon">📊</span></div>
+                    <h3>Konum Bazlı Veri</h3>
+                    <p>µSv/h, GPS koordinatları ve tarih-saat kaydı; CSV formatında SD karta</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Drone – Tamamlanmış Sistem</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Ölçüm sistemi DJI Avata 2 gövdesine sabitlenmiş hali. Muhafaza kutusu ağırlık merkezi dikkate alınarak kelepçe ve destek elemanları ile montaj yapılmıştır.</p>
+            <div class="drone-showcase">
+                <div class="drone-main">
+                    <img src="images/drone/dji avata ve kurulu devrenin uçuş görüntüsü.jpg" alt="Drone üzerinde tamamlanmış ölçüm sistemi" onerror="this.style.display='none'; this.nextElementSibling.classList.add('show')">
+                    <span class="drone-placeholder">Drone tamamlanmış görseli</span>
+                </div>
+                <div class="drone-grid">
+                    <div class="gallery-item"><img src="images/drone/dji-avata-2.jpg" alt="DJI Avata 2" onerror="this.parentElement.style.display='none'"></div>
+                    <div class="gallery-item"><img src="images/drone/dji mavic 3 pro modeli ile devre hazır hali.JPG" alt="Devre hazır hali" onerror="this.parentElement.style.display='none'"></div>
+                    <div class="gallery-item"><img src="images/drone/okul kapalı alanda uçurulan drone kamera görüntüsü.jpg" alt="Açık alanda drone uçuşu" onerror="this.parentElement.style.display='none'"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Ölçüm Sonuçları Özeti</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Saha testlerinden elde edilen temel bulgular:</p>
+            <div class="results-summary">
+                <div class="result-card">
+                    <span class="result-value">0,13–0,15 µSv/h</span>
+                    <p>Açık alan (okul bahçesi) – doğal arka plan ile uyumlu</p>
+                </div>
+                <div class="result-card">
+                    <span class="result-value">0,31 µSv/h</span>
+                    <p>Bodrum kat – radon birikimi etkisi</p>
+                </div>
+                <div class="result-card">
+                    <span class="result-value">0,07–0,14 µSv/h</span>
+                    <p>Zemin ve üst katlar – yükseklikle azalma</p>
+                </div>
+            </div>
+            <a href="olcum-sonuclari.html" class="btn">Detaylı Ölçüm Sonuçları</a>
+        </section>
+
+        <section>
+            <h2>3B Haritalandırma Görselleri</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">GPS koordinatları ile eşleştirilen radyasyon verilerinin Google Earth ve grafiksel görselleştirmeleri.</p>
+            <div class="gallery-grid gallery-large">
+                <div class="gallery-item"><img src="images/3b-harita/ölçüm sonuçlarının 3b haritalandırılması.png" alt="3B haritalandırma" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/drone-rota-gorunum.png" alt="Drone rota görüntüsü" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/drone uçuş rotası.png" alt="Drone uçuş rotası" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/mesafe-cpm-grafik.jpg" alt="Mesafeye bağlı CPM düşüşü" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/arka-plan-dagilim.jpg" alt="Arka plan ölçüm dağılımı" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <a href="malzemeler.html" class="btn">Kullanılan Malzemeler</a>
+            <a href="proje.html" class="btn btn-outline">Proje Sürecini İnceleyin</a>
+            <a href="takim.html" class="btn btn-outline">Takımı Tanıyın</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+</body>
+</html>
