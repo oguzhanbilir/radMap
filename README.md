@@ -17,7 +17,7 @@ Codeavour 7.0 Track 1 – Proje web sitesi. Rapor verilerine dayalı kapsamlı s
 
 ```
 images/
-├── components/     # nano.jpg, geiger.jpg, oled.jpg, gps.jpg, sd-kart.jpg, muhafaza-kutusu.jpg
+├── components/     # nano.jpeg, geiger.jpg, oled.jpg, gps.jpg, sd-kart.jpg, muhafaza-kutusu.jpg
 ├── drone/          # drone-tamamlanmis.jpg, drone-ust-gorunum.jpg, drone-yan-gorunum.jpg, drone-acik-alan.jpg, dji-avata-2.jpg
 ├── 3b-harita/      # google-earth-olcum-noktalari.jpg, drone-rota-gorunum.jpg, kapali-alan-grafik.jpg, mesafe-cpm-grafik.jpg, mesafe-usvh-grafik.jpg, arka-plan-dagilim.jpg
 └── proje/          # devre-kurulum.jpg, devre-semasi.jpg, drone-montaj.jpg, saha-olcum.jpg, bodrum-olcum.jpg, nukleer-tip.jpg, pictoblox.jpg
