@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Ölçüm Sonuçları | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Ölçüm Sonuçları</h1>
+            <p class="tagline">RadMap Saha Testi Bulguları</p>
+        </section>
+
+        <section>
+            <h2>Arka Plan Radyasyonu</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Kaynaklardan uzak, kararlı koşullarda yapılan ölçümler.</p>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Ölçüm No</th>
+                            <th>CPM</th>
+                            <th>µSv/h</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>42</td><td>0,11</td></tr>
+                        <tr><td>2</td><td>45</td><td>0,12</td></tr>
+                        <tr><td>3</td><td>43</td><td>0,11</td></tr>
+                        <tr><td>4</td><td>44</td><td>0,12</td></tr>
+                        <tr><td>5</td><td>41</td><td>0,10</td></tr>
+                        <tr class="highlight"><td><strong>Ortalama (μ)</strong></td><td>43,0</td><td>0,112</td></tr>
+                        <tr><td>Standart Sapma (σ)</td><td>1,58</td><td>0,008</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="gallery-grid" style="margin-top: 1.5rem;">
+                <div class="gallery-item"><img src="images/3b-harita/ölçüm sonuçlarının 3b haritalandırılması.png" alt="3B haritalandırma" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Açık Alan Ölçümleri</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Drone ile okul bahçesinde yapılan ölçümler. GPS verisiyle eşleştirilmiştir.</p>
+            <div class="result-highlight">
+                <span class="result-value">0,13 – 0,15 µSv/h</span>
+                <p>Doğal arka plan ile örtüşen değerler. Ölçüm verileri Google Earth üzerinde görselleştirilmiştir.</p>
+            </div>
+            <div class="gallery-grid" style="margin-top: 1.5rem;">
+                <div class="gallery-item"><img src="images/3b-harita/ölçüm sonuçlarının 3b haritalandırılması.png" alt="3B haritalandırma" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/drone-rota-gorunum.png" alt="Drone rota görüntüsü" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Kapalı Alan Ölçümleri</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Okul binasının farklı katlarında manuel ölçümler. Sistem elde taşınarak kullanılmıştır.</p>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Konum</th>
+                            <th>µSv/h</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Bodrum Kat (Yer altı otoparkı)</td><td><strong>0,31</strong></td></tr>
+                        <tr><td>Zemin Kat</td><td>0,14</td></tr>
+                        <tr><td>1. Kat</td><td>0,08</td></tr>
+                        <tr><td>2. Kat</td><td>0,07</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.95rem;">Bodrum kattaki yüksek değer, radon gazı birikimi veya yer kaynaklı iyonlaştırıcı etkilere bağlanabilir. Katlar arası doz farkı, yükseklikle radyasyon şiddetinin azaldığını gösterir.</p>
+            <div class="gallery-grid" style="margin-top: 1.5rem;">
+                <div class="gallery-item"><img src="images/proje/iç mekan pce-ram10 ile ölçüm.png" alt="İç mekan ölçüm" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/ölçüm sonuçlarının 3b haritalandırılması.png" alt="3B haritalandırma" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Mesafeye Bağlı Radyasyon Değişimi</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Sabit radyoaktif kaynakla yapılan ölçümler; ters kare yasası (inverse square law) ile uyumlu.</p>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img src="images/3b-harita/drone-rota-gorunum.png" alt="Drone rota görüntüsü" onerror="this.parentElement.style.display='none'"></div>
+                <div class="gallery-item"><img src="images/3b-harita/drone uçuş rotası.png" alt="Drone uçuş rotası" onerror="this.parentElement.style.display='none'"></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Nükleer Tıp Doğrulaması</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">SANKO Üniversitesi Hastanesi Nükleer Tıp Bölümü ile Teknesyum-99m kaynağı kullanılarak profesyonel cihazla karşılaştırmalı test.</p>
+            <div class="result-highlight">
+                <span class="result-value">9,49 µSv/saat</span>
+                <p>1 metre mesafede ölçüm; iki cihaz uyumlu sonuç verdi.</p>
+            </div>
+            <div class="gallery-item" style="max-width: 500px; margin-top: 1rem;">
+                <img src="images/proje/hastane ortamı devre doğrulama kontrol ölçümü.jpg" alt="Nükleer Tıp doğrulama testi" onerror="this.parentElement.style.display='none'">
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1</p>
+    </footer>
+</body>
+</html>
