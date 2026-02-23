@@ -321,6 +321,13 @@ h2 {
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
+.ska-pictogram {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
 .ska-top {
     font-size: 0.7rem;
     font-weight: 700;
