@@ -321,6 +321,29 @@ h2 {
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
+.ska-tile {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    display: block;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.ska-fallback {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    background: rgba(0, 212, 170, 0.18);
+    border: 1px solid rgba(0, 212, 170, 0.35);
+    color: var(--accent);
+    font-weight: 800;
+}
+
 .ska-pictogram {
     width: 28px;
     height: 28px;
