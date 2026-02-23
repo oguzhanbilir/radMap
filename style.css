@@ -306,6 +306,42 @@ h2 {
     grid-template-columns: repeat(4, 1fr);
 }
 
+/* SKA (SDG) ikonları */
+.ska-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.ska-top {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.95;
+    line-height: 1;
+}
+
+.ska-num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 0.15rem;
+}
+
+/* SKA resmi renklerine yakın tonlar */
+.ska-3 { background: #4C9F38; }   /* Sağlık */
+.ska-6 { background: #26BDE2; }   /* Temiz Su */
+.ska-13 { background: #3F7E44; }  /* İklim */
+.ska-15 { background: #56C02B; }  /* Karada Yaşam */
+
 .feature .icon {
     font-size: 2rem;
     display: block;
