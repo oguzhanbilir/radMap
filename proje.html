@@ -57,55 +57,251 @@
         <section class="proje-section timeline-section">
             <h2>Gelişim Aşamaları</h2>
             <p class="section-desc">Projenin fikir aşamasından 3B haritalandırmaya kadar geçen süreç.</p>
+            <div class="process-highlights">
+                <div class="process-pill"><strong>7</strong> aşama</div>
+                <div class="process-pill"><strong>Açık + kapalı</strong> saha testleri</div>
+                <div class="process-pill"><strong>Nükleer Tıp</strong> doğrulaması</div>
+                <div class="process-pill"><strong>3B</strong> haritalandırma</div>
+            </div>
             <div class="timeline">
                 <div class="timeline-item">
                     <span class="timeline-num">1</span>
-                    <div class="timeline-content">
-                        <h3>Fikir ve Tema Seçimi</h3>
-                        <p>"Temiz Gezegen, Sağlıklı İnsanlar" teması kapsamında radyasyon ölçümü fikri belirlendi. Görünmez çevre tehdidini görünür kılmak hedeflendi.</p>
-                    </div>
+                    <details class="timeline-details" open>
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Fikir ve Tema Seçimi</h3>
+                                <p>Görünmez çevre tehdidini görünür kılacak bir çözüm fikri oluşturduk.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>“Temiz Gezegen, Sağlıklı İnsanlar” temasıyla probleme odaklandık.</li>
+                                        <li>Uzaktan ölçüm ve 3B görselleştirme hedefini belirledik.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Proje kapsamı + hedefler + başarı ölçütleri</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Tema</span>
+                                <span class="chip">Problem tanımı</span>
+                                <span class="chip">ALARA</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">2</span>
-                    <div class="timeline-content">
-                        <h3>Donanım Tasarımı</h3>
-                        <p>Arduino Nano (ana kart), Geiger-Müller sensörü, OLED SSD1306 ekran, GPS NEO-6M ve SD kart modülleri seçildi. Bağlantı şeması ve pin atamaları planlandı.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Donanım Tasarımı</h3>
+                                <p>Ölçüm sistemini modüler şekilde tasarlayıp bileşenleri seçtik.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>Arduino Nano, Geiger‑Müller sensörü, OLED (SSD1306), GPS (NEO‑6M), SD kart modülü seçimi</li>
+                                        <li>Bağlantı şeması ve pin atamalarını planladık</li>
+                                        <li>Muhafaza kutusu/montaj gereksinimlerini belirledik</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Çalışan devre kurulumu ve modül entegrasyonu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Arduino Nano</span>
+                                <span class="chip">Geiger‑Müller</span>
+                                <span class="chip">OLED</span>
+                                <span class="chip">GPS</span>
+                                <span class="chip">MicroSD</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">3</span>
-                    <div class="timeline-content">
-                        <h3>Yazılım Geliştirme</h3>
-                        <p>CPM ve µSv/h hesaplama algoritması, hareketli ortalama yöntemi ve PictoBlox entegrasyonu tamamlandı. geiger iha.sb3 projesi oluşturuldu.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Yazılım Geliştirme</h3>
+                                <p>Ölçüm algoritmalarını yazıp veriyi anlamlı çıktıya dönüştürdük.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>CPM hesaplama ve µSv/h dönüşümünü uyguladık</li>
+                                        <li>Hareketli ortalama ile ölçüm değerlerini daha stabil hale getirdik</li>
+                                        <li>PictoBlox entegrasyonu (geiger iha.sb3) ile görsel/sesli geri bildirim ekledik</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Stabil ölçüm + anlık gösterim + kayıt altyapısı</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Algoritma</span>
+                                <span class="chip">PictoBlox</span>
+                                <span class="chip">Tobi</span>
+                                <span class="chip">CSV kayıt</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">4</span>
-                    <div class="timeline-content">
-                        <h3>Drone Entegrasyonu</h3>
-                        <p>DJI Avata 2 gövdesine muhafaza kutusu montajı. Ağırlık merkezi dikkate alınarak kelepçe ve destek elemanları kullanıldı.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Drone Entegrasyonu</h3>
+                                <p>Sistemi DJI Avata 2’ye güvenli ve dengeli şekilde entegre ettik.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>Muhafaza kutusunu drone gövdesine sabitledik</li>
+                                        <li>Ağırlık merkezi ve titreşim etkilerini göz önünde bulundurduk</li>
+                                        <li>Kelepçe ve destek elemanlarıyla güvenli montaj yaptık</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Uçuşa uygun, stabil taşıma kurulumu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">DJI Avata 2</span>
+                                <span class="chip">Montaj</span>
+                                <span class="chip">Denge</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">5</span>
-                    <div class="timeline-content">
-                        <h3>Saha Testleri</h3>
-                        <p>Okul bahçesinde açık alan ölçümleri, kapalı alan testleri ve drone uçuş testleri gerçekleştirildi. GPS verileriyle eşleştirme yapıldı.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Saha Testleri</h3>
+                                <p>Açık ve kapalı alanlarda ölçüm alıp sistemi gerçek koşullarda denedik.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>Okul bahçesinde çok noktalı açık alan ölçümleri</li>
+                                        <li>Bodrum/katlar gibi kapalı alanlarda karşılaştırmalı ölçümler</li>
+                                        <li>Drone uçuş testleri ve stabilite kontrolü</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Konum bazlı veri setleri + test bulguları</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Saha</span>
+                                <span class="chip">Açık alan</span>
+                                <span class="chip">Kapalı alan</span>
+                                <span class="chip">GPS eşleştirme</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">6</span>
-                    <div class="timeline-content">
-                        <h3>Doğrulama – Nükleer Tıp</h3>
-                        <p>SANKO Üniversitesi Hastanesi Nükleer Tıp Bölümü ile iş birliği. Teknesyum-99m kaynağı ile profesyonel cihazla karşılaştırmalı test. 9,49 µSv/saat ölçümü, iki cihaz uyumlu.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>Doğrulama – Nükleer Tıp</h3>
+                                <p>SANKO Üniversitesi ile karşılaştırmalı ölçüm yaparak doğruladık.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>Teknesyum‑99m kaynağı ile profesyonel cihazla karşılaştırmalı test</li>
+                                        <li>Aynı koşullarda ölçüm alarak sonuçları kıyasladık</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>1 m mesafede <strong>9,49 µSv/saat</strong> ölçümü ve uyumlu sonuç</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Doğrulama</span>
+                                <span class="chip">SANKO Üniversitesi</span>
+                                <span class="chip">Teknesyum‑99m</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
                 <div class="timeline-item">
                     <span class="timeline-num">7</span>
-                    <div class="timeline-content">
-                        <h3>3B Haritalandırma</h3>
-                        <p>GPS koordinatları ve yükseklik bilgisi kullanılarak radyasyonun 3 boyutlu mekânsal dağılımı oluşturuldu.</p>
-                    </div>
+                    <details class="timeline-details">
+                        <summary>
+                            <div class="timeline-summary">
+                                <h3>3B Haritalandırma</h3>
+                                <p>Ölçüm verilerini işleyip 3B mekânsal dağılımı görselleştirdik.</p>
+                            </div>
+                        </summary>
+                        <div class="timeline-body">
+                            <div class="timeline-cols">
+                                <div>
+                                    <h4>Ne yaptık?</h4>
+                                    <ul>
+                                        <li>GPS koordinatları ve yükseklik verisini ölçümle eşleştirdik</li>
+                                        <li>Python ile veriyi işleyip harita çıktısı ürettik</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Çıktı</h4>
+                                    <ul>
+                                        <li>Google Earth / harita üzerinde 3B görselleştirme</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="timeline-tags">
+                                <span class="chip">Python</span>
+                                <span class="chip">Google Earth</span>
+                                <span class="chip">3B</span>
+                            </div>
+                        </div>
+                    </details>
                 </div>
             </div>
         </section>
