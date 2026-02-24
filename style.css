@@ -1217,6 +1217,12 @@ footer {
     border: 1px solid rgba(0, 212, 170, 0.2);
 }
 
+.guide-card-wide {
+    grid-column: 1 / -1;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .guide-desc {
     color: var(--text-muted);
     font-size: 0.95rem;
