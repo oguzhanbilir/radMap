@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Arduino Devre Kodu Rehberi | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+                <li><a href="rehberler.html">Kod Rehberleri</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Arduino Devre Kodu Rehberi</h1>
+            <p class="tagline">Geiger-Müller ölçümü, GPS (enlem, boylam, rakım), SD karta yazma, OLED ekran</p>
+        </section>
+
+        <section>
+            <div class="guide-grid">
+                <div class="guide-card guide-card-wide">
+                    <h3>Devrede ne yapılıyor?</h3>
+                    <p class="guide-desc">RadMap devresinde <strong>Arduino Nano</strong> ile: Geiger-Müller sayacından radyasyon ölçülür, GPS’ten <strong>enlem, boylam ve rakım</strong> alınır, her ölçüm <strong>micro SD karta</strong> yazılır ve anlık değerler <strong>OLED ekranda</strong> gösterilir. Aşağıda bu akışın Arduino (C++) kodları ve açıklamaları yer alıyor.</p>
+
+                    <details class="guide-accordion" open>
+                        <summary>Pin ve kütüphane tanımları</summary>
+                        <div class="guide-body">
+                            <ul>
+                                <li><strong>Geiger sinyal</strong>: D2 (kesme ile sayım)</li>
+                                <li><strong>GPS</strong>: D3 = RX (GPS TX’e bağlı), D4 = TX (GPS RX’e bağlı) — SoftwareSerial</li>
+                                <li><strong>SD kart</strong>: SPI, CS = D10</li>
+                                <li><strong>OLED</strong>: I2C (SDA = A4, SCL = A5), adres 0x3C</li>
+                            </ul>
+                            <pre class="code-block"><code>#include &lt;Wire.h&gt;
+#include &lt;SPI.h&gt;
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;TinyGPS++.h&gt;
+#include &lt;SD.h&gt;
+
+#define GEIGER_PIN 2
+#define GPS_RX_PIN 3   // GPS modül TX → Arduino RX (D3)
+#define GPS_TX_PIN 4   // GPS modül RX → Arduino TX (D4)
+#define SD_CS_PIN  10</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>Geiger sayımı (kesme ile)</summary>
+                        <div class="guide-body">
+                            <p>Geiger-Müller tüpü her radyasyon olayında TTL çıkışta kısa bir darbe üretir. Bu darbeler D2 pinine bağlıdır; <strong>kesme (interrupt)</strong> ile sayılır. Gürültüyü azaltmak için 200 µs’den kısa aralıklar yok sayılır.</p>
+                            <pre class="code-block"><code>volatile uint32_t pulseCount = 0;
+volatile uint32_t lastInterruptTime = 0;
+
+void geigerISR() {
+  uint32_t now = micros();
+  if (now - lastInterruptTime &gt; 200) {
+    pulseCount++;
+    lastInterruptTime = now;
+  }
+}
+
+// setup() içinde:
+pinMode(GEIGER_PIN, INPUT);
+attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>CPM ve µSv/h hesaplama (60 saniyelik pencere)</summary>
+                        <div class="guide-body">
+                            <p>Her saniye kesmeden gelen toplam vuruş alınır; son 60 saniyelik dairesel tampon ile <strong>CPM (dakikadaki vuruş)</strong> hesaplanır. CPM, kalibrasyon katsayısı ile <strong>µSv/h</strong> (mikrosievert/saat) değerine çevrilir.</p>
+                            <pre class="code-block"><code>uint8_t counts[60];
+uint8_t bufferIndex = 0;
+uint32_t totalCountsInWindow = 0;
+uint32_t uptimeSeconds = 0;
+
+// Her saniye (loop içinde):
+noInterrupts();
+uint8_t currentSecCounts = pulseCount;
+pulseCount = 0;
+interrupts();
+
+totalCountsInWindow -= counts[bufferIndex];
+counts[bufferIndex] = currentSecCounts;
+totalCountsInWindow += currentSecCounts;
+bufferIndex = (bufferIndex + 1) % 60;
+
+uint32_t cpm = (uptimeSeconds &lt; 60)
+  ? (totalCountsInWindow * 60) / (uptimeSeconds ? uptimeSeconds : 1)
+  : totalCountsInWindow;
+
+float usvh = cpm * 0.00812f;   // CPM → µSv/h (kalibrasyon katsayısı)</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>GPS: enlem, boylam, rakım</summary>
+                        <div class="guide-body">
+                            <p>GPS modülü NMEA cümleleri üretir; <strong>TinyGPS++</strong> bu cümleleri işleyerek enlem, boylam ve rakım (yükseklik) verir. Arduino’da D3/D4 üzerinden SoftwareSerial ile okunur.</p>
+                            <pre class="code-block"><code>TinyGPSPlus gps;
+SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);
+
+// loop() içinde sürekli:
+while (gpsSerial.available()) {
+  gps.encode(gpsSerial.read());
+}
+
+// Değerleri almak için:
+float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
+float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
+float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>Micro SD karta yazma (CSV)</summary>
+                        <div class="guide-body">
+                            <p>Her ölçümde CPM, µSv/h, enlem, boylam ve rakım <strong>log.txt</strong> dosyasına virgülle ayrılmış (CSV) olarak eklenir. 3B haritalandırma ve analiz bu dosyadan yapılabilir.</p>
+                            <pre class="code-block"><code>void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
+  File f = SD.open("log.txt", FILE_WRITE);
+  if (!f) return;
+  f.print(millis()); f.print(",");
+  f.print(cpm); f.print(",");
+  f.print(usvh, 3); f.print(",");
+  f.print(lat, 6); f.print(",");
+  f.print(lng, 6); f.print(",");
+  f.println(alt, 2);   // rakım (metre)
+  f.close();
+}
+
+// setup() içinde:
+if (!SD.begin(SD_CS_PIN)) {
+  // SD yok veya hata – ekranda uyarı gösterilebilir
+}</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>OLED ekranda ölçüm gösterme</summary>
+                        <div class="guide-body">
+                            <p>I2C OLED (128x64) üzerinde başlık, CPM, µSv/h ve GPS durumu (OK / bekleniyor) gösterilir. Projede bazen hazır kütüphane (örn. SSD1306Ascii), bazen de doğrudan I2C komutları (oledCmd, oledPrint) kullanılır.</p>
+                            <pre class="code-block"><code>// Ekran güncellemesi (her saniye):
+oledClear();
+oledPrint(0, 0, "DRONE MULLER");
+oledPrint(0, 2, "CPM: ");
+oledPrintNum(30, 2, cpm);
+oledPrint(0, 4, "uSv/h: ");
+oledPrintFloat(42, 4, usvh, 3);
+if (gps.location.isValid()) {
+  oledPrint(0, 6, "GPS OK");
+} else {
+  oledPrint(0, 6, "GPS bekleniyor");
+}</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>Ana döngü (loop) özeti</summary>
+                        <div class="guide-body">
+                            <ol>
+                                <li>GPS’ten gelen veriyi oku (NMEA → TinyGPS++)</li>
+                                <li>Her 1 saniyede bir: kesmeden pulse sayısını al, CPM ve µSv/h hesapla</li>
+                                <li>GPS’ten enlem, boylam, rakım al</li>
+                                <li>SD karta satır yaz (zaman, CPM, µSv/h, enlem, boylam, rakım)</li>
+                                <li>OLED’i güncelle (CPM, µSv/h, GPS durumu)</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>Tam örnek kod (tek dosya özeti)</summary>
+                        <div class="guide-body">
+                            <p>Aşağıda tüm parçaların bir araya getirilmiş hali yer alıyor. Proje klasöründeki <code>DroneMuller_Full.ino</code> dosyası bu yapıdadır; rakım (altitude) SD yazımına eklenerek 3B haritalandırma için kullanılabilir.</p>
+                            <pre class="code-block"><code>/*
+ * DRONE MÜLLER - Tam Sistem (Geiger + OLED + GPS + SD)
+ * Geiger ölçümü, GPS (enlem/boylam/rakım), SD karta CSV, OLED gösterim
+ */
+#include &lt;Wire.h&gt;
+#include &lt;SPI.h&gt;
+#include &lt;SoftwareSerial.h&gt;
+#include &lt;TinyGPS++.h&gt;
+#include &lt;SD.h&gt;
+
+#define GEIGER_PIN 2
+#define GPS_RX_PIN 3
+#define GPS_TX_PIN 4
+#define SD_CS_PIN  10
+
+volatile uint32_t pulseCount = 0;
+volatile uint32_t lastInterruptTime = 0;
+uint8_t counts[60], bufferIndex = 0;
+uint32_t totalCountsInWindow = 0, uptimeSeconds = 0, lastLogTime = 0;
+
+TinyGPSPlus gps;
+SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);
+
+void geigerISR() {
+  uint32_t now = micros();
+  if (now - lastInterruptTime &gt; 200) {
+    pulseCount++;
+    lastInterruptTime = now;
+  }
+}
+
+void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
+  File f = SD.open("log.txt", FILE_WRITE);
+  if (!f) return;
+  f.print(millis()); f.print(",");
+  f.print(cpm); f.print(",");
+  f.print(usvh, 3); f.print(",");
+  f.print(lat, 6); f.print(",");
+  f.print(lng, 6); f.print(",");
+  f.println(alt, 2);
+  f.close();
+}
+
+void setup() {
+  Serial.begin(9600);
+  gpsSerial.begin(9600);
+  pinMode(GEIGER_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);
+  oledInit();   // I2C OLED başlat
+  oledClear();
+  oledPrint(0, 0, "DRONE MULLER");
+  oledPrint(0, 2, "Baslatiliyor...");
+  if (!SD.begin(SD_CS_PIN)) { oledPrint(0, 4, "SD HATA!"); delay(2000); }
+  memset(counts, 0, sizeof(counts));
+  lastLogTime = millis();
+}
+
+void loop() {
+  while (gpsSerial.available()) gps.encode(gpsSerial.read());
+
+  if (millis() - lastLogTime &gt;= 1000) {
+    lastLogTime = millis();
+    uptimeSeconds++;
+    noInterrupts();
+    uint8_t n = pulseCount;
+    pulseCount = 0;
+    interrupts();
+    totalCountsInWindow -= counts[bufferIndex];
+    counts[bufferIndex] = n;
+    totalCountsInWindow += n;
+    bufferIndex = (bufferIndex + 1) % 60;
+    uint32_t cpm = (uptimeSeconds &lt; 60) ? (uptimeSeconds ? (totalCountsInWindow * 60 / uptimeSeconds) : 0) : totalCountsInWindow;
+    float usvh = cpm * 0.00812f;
+    float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
+    float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
+    float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;
+    writeToSD(cpm, usvh, lat, lng, alt);
+    oledClear();
+    oledPrint(0, 0, "DRONE MULLER");
+    oledPrint(0, 2, "CPM: ");
+    oledPrintNum(30, 2, cpm);
+    oledPrint(0, 4, "uSv/h: ");
+    oledPrintFloat(42, 4, usvh, 3);
+    oledPrint(0, 6, gps.location.isValid() ? "GPS OK" : "GPS bekleniyor");
+  }
+}</code></pre>
+                            <p><strong>Not:</strong> <code>oledInit</code>, <code>oledClear</code>, <code>oledPrint</code>, <code>oledPrintNum</code>, <code>oledPrintFloat</code> fonksiyonları proje içindeki tam firmware dosyasında (OLED I2C komutları ve 5x7 font) ile tanımlıdır.</p>
+                        </div>
+                    </details>
+
+                    <div style="margin-top: 1.25rem;">
+                        <a class="btn" href="rehberler.html">← Tüm rehberler</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+</body>
+</html>
