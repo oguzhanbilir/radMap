@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>3B Haritalandırma Rehberi | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+                <li><a href="rehberler.html">Kod Rehberleri</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>3B Haritalandırma (Google Earth – KML)</h1>
+            <p class="tagline">Ölçüm sonrası veriden KML üretimi ve Google Earth’te 3B görselleştirme</p>
+        </section>
+
+        <section>
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <h3>Rehber</h3>
+                    <p class="guide-desc">Bu projede 3B haritalandırmayı <strong>Google Earth üzerinde KML</strong> ile yaptık.</p>
+
+                    <details class="guide-accordion" open>
+                        <summary>Gerekli veri alanları (minimum)</summary>
+                        <div class="guide-body">
+                            <ul>
+                                <li><strong>Latitude</strong>, <strong>Longitude</strong></li>
+                                <li><strong>Altitude</strong> (m)</li>
+                                <li><strong>Radiation_Value</strong> (µSv/h)</li>
+                                <li>(Opsiyonel) <strong>Time</strong>, <strong>Speed</strong></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>KML üretim akışı (dosyalar)</summary>
+                        <div class="guide-body">
+                            <ul>
+                                <li><strong>Girdi</strong>: <code>drone_data_paper.json</code></li>
+                                <li><strong>Script</strong>: <code>generate_kml.py</code></li>
+                                <li><strong>Çıktı</strong>: <code>drone_radiation_visualization.kml</code></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary><code>generate_kml.py</code> – Kod rehberi (parça parça)</summary>
+                        <div class="guide-body">
+                            <h4>Veriyi yükleme (JSON → DataFrame)</h4>
+                            <pre class="code-block"><code>with open('drone_data_paper.json', 'r') as f:
+    data = json.load(f)
+
+df = pd.DataFrame(data)</code></pre>
+
+                            <h4>Kamera merkezi (LookAt)</h4>
+                            <pre class="code-block"><code>center_lat = df['Enlem (Lat)'].mean()
+center_lon = df['Boylam (Lon)'].mean()</code></pre>
+
+                            <h4>Ölçek ve grid boyutu (VMIN/VMAX, hw)</h4>
+                            <pre class="code-block"><code>VMIN = 0.090
+VMAX = 0.130
+
+hw = 0.000013</code></pre>
+
+                            <h4>Clamp + normalize</h4>
+                            <pre class="code-block"><code>chart_val = max(VMIN, min(VMAX, rad))
+norm = (chart_val - VMIN) / (VMAX - VMIN)</code></pre>
+
+                            <h4>Basamaklı renk haritası</h4>
+                            <pre class="code-block"><code>if norm &lt; 0.2:
+    red, green, blue = 0, 0, 255
+elif norm &lt; 0.4:
+    red, green, blue = 0, 255, 255
+elif norm &lt; 0.6:
+    red, green, blue = 0, 255, 0
+elif norm &lt; 0.8:
+    red, green, blue = 255, 255, 0
+else:
+    red, green, blue = 255, 0, 0</code></pre>
+
+                            <h4>Poligon koordinatları (küçük kare yüzey)</h4>
+                            <pre class="code-block"><code>c1 = f"{lon+hw},{lat+hw},{real_altitude}"
+c2 = f"{lon-hw},{lat+hw},{real_altitude}"
+c3 = f"{lon-hw},{lat-hw},{real_altitude}"
+c4 = f"{lon+hw},{lat-hw},{real_altitude}"
+coords_str = f"{c1} {c2} {c3} {c4} {c1}"</code></pre>
+
+                            <h4>KML yazımı (Placemark)</h4>
+                            <pre class="code-block"><code>&lt;Placemark&gt;
+  &lt;description&gt;...&lt;/description&gt;
+  &lt;Style&gt;...&lt;/Style&gt;
+  &lt;Polygon&gt;
+    &lt;altitudeMode&gt;relativeToGround&lt;/altitudeMode&gt;
+    &lt;coordinates&gt;{coords_str}&lt;/coordinates&gt;
+  &lt;/Polygon&gt;
+&lt;/Placemark&gt;</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>Bu kodda neler var / neler yok?</summary>
+                        <div class="guide-body">
+                            <div class="guide-two-col">
+                                <div>
+                                    <h4>Var</h4>
+                                    <ul>
+                                        <li>JSON okuma</li>
+                                        <li>Clamp + normalize</li>
+                                        <li>Renk basamakları</li>
+                                        <li>Google Earth için KML üretimi</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Yok (bilerek)</h4>
+                                    <ul>
+                                        <li>Interpolasyon / ısı haritası doldurma</li>
+                                        <li>Canlı (uçuş sırasında) haritalama</li>
+                                        <li>Otonom uçuş planlama</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <div style="margin-top: 1.25rem;">
+                        <a class="btn" href="rehberler.html">← Tüm rehberler</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+</body>
+</html>
+

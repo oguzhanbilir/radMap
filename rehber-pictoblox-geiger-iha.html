@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>PictoBlox geiger iha.sb3 Rehberi | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+                <li><a href="rehberler.html">Kod Rehberleri</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>PictoBlox – <code>geiger iha.sb3</code></h1>
+            <p class="tagline">Blok akışı, mevcut fonksiyonlar ve RadMap’e genişletme mantığı</p>
+        </section>
+
+        <section>
+            <div class="guide-grid">
+                <div class="guide-card">
+                    <h3>Rehber</h3>
+                    <p class="guide-desc">Bu sayfa, <strong>SB3 dosyasını</strong> (PictoBlox blok projesi) “web sayfası” gibi okunabilir şekilde açıklar.</p>
+
+                    <details class="guide-accordion" open>
+                        <summary>Dosya şu an ne yapıyor?</summary>
+                        <div class="guide-body">
+                            <p><strong>Arduino Nano</strong> üzerinde <strong>D2</strong> dijital girişini okur; duruma göre <strong>D13</strong> dahili LED’i yakar/söndürür.</p>
+                            <p style="margin-top: 0.5rem;">Bu hali “pin okuma ve kontrol testi” gibidir.</p>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>Neler var / neler yok?</summary>
+                        <div class="guide-body">
+                            <div class="guide-two-col">
+                                <div>
+                                    <h4>Var</h4>
+                                    <ul>
+                                        <li>Arduino başlatma + sürekli döngü</li>
+                                        <li><code>digitalRead</code> (PIN 2)</li>
+                                        <li><code>digitalWrite</code> (PIN 13)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Yok</h4>
+                                    <ul>
+                                        <li>Geiger pulse sayımı</li>
+                                        <li>CPM / µSv/h hesaplama</li>
+                                        <li>OLED ekran</li>
+                                        <li>GPS + SD kayıt</li>
+                                        <li>KML üretimi</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>Blok akışı (özet)</summary>
+                        <div class="guide-body">
+                            <ol>
+                                <li><code>arduinoUnoStartUp</code> (Arduino başlat)</li>
+                                <li><code>forever</code> (sürekli döngü)</li>
+                                <li><code>if/else</code> + <code>digitalRead PIN 2</code></li>
+                                <li>Doğruysa <code>digitalWrite PIN 13 = true</code>, değilse <code>false</code></li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>RadMap için nasıl geliştirilir?</summary>
+                        <div class="guide-body">
+                            <ul>
+                                <li><strong>Pulse counting</strong>: TTL darbeleri için sayaç değişkeni</li>
+                                <li><strong>CPM</strong>: 1 saniyelik sayımı toplayıp stabil CPM üretme (sliding window)</li>
+                                <li><strong>µSv/h</strong>: dönüşüm katsayısı ile hesaplama</li>
+                                <li><strong>OLED</strong>: CPM ve µSv/h değerlerini ekranda gösterme</li>
+                                <li><strong>Kayıt/GPS</strong>: ölçüm + konum + yükseklik kaydı</li>
+                                <li><strong>3B</strong>: bilgisayarda Python ile KML üretip Google Earth’te 3B görselleştirme</li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>PictoBlox Python örneği (fonksiyonlar ne yapıyor?)</summary>
+                        <div class="guide-body">
+                            <p>SB3 dosyasının kendisi blok tabanlıdır; ama aynı mantığı PictoBlox’un Python modunda çalıştırmak için hazırlanan örneklerden:</p>
+
+                            <h4><code>read_geiger_pin()</code> – Geiger girişini okur</h4>
+                            <pre class="code-block"><code>def read_geiger_pin():
+    if SIMULATION_MODE:
+        import random
+        return random.random() &gt; 0.85
+    if nano:
+        raw = nano.readDigital(GEIGER_PIN) if hasattr(nano, 'readDigital') else nano.digitalRead(GEIGER_PIN)
+        return raw in (True, 1) or str(raw).lower() == 'true'
+    return False</code></pre>
+
+                            <h4><code>oled_yaz()</code> / <code>oled_temizle()</code> – OLED’e yazdırır</h4>
+                            <pre class="code-block"><code>def oled_yaz(metin, x=0, y=0):
+    if not oled_ok or nano is None:
+        return
+    nano.writeDisplay(str(metin), x, y)
+
+def oled_temizle():
+    if not oled_ok or nano is None:
+        return
+    nano.clearDisplay()</code></pre>
+
+                            <h4>Ana döngü – 1 saniyede darbe sayar, CPM ve µSv/h hesaplar</h4>
+                            <pre class="code-block"><code>while True:
+    start_sec = time.time()
+    pulse_in_sec = 0
+
+    while time.time() - start_sec &lt; 1.0:
+        val = read_geiger_pin()
+        if val and not prev_state:
+            pulse_in_sec += 1
+            prev_state = True
+        elif not val:
+            prev_state = False
+
+    total_counts -= counts[buffer_index]
+    counts[buffer_index] = pulse_in_sec
+    total_counts += pulse_in_sec
+    buffer_index = (buffer_index + 1) % WINDOW_SIZE
+
+    cpm = (total_counts / WINDOW_SIZE) * 60
+    uSv = cpm * CONVERSION_FACTOR</code></pre>
+                        </div>
+                    </details>
+
+                    <div style="margin-top: 1.25rem;">
+                        <a class="btn" href="rehberler.html">← Tüm rehberler</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+</body>
+</html>
+
