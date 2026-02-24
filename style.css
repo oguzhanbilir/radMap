@@ -1203,6 +1203,108 @@ footer {
     font-size: 0.95rem;
 }
 
+/* Rehberler sayfası */
+.guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.guide-card {
+    background: var(--bg-card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+.guide-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.guide-accordion {
+    border: 1px solid rgba(0, 212, 170, 0.18);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.75rem;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.guide-accordion > summary {
+    cursor: pointer;
+    padding: 0.85rem 1rem;
+    font-weight: 600;
+    color: var(--text);
+    list-style: none;
+}
+
+.guide-accordion > summary::-webkit-details-marker {
+    display: none;
+}
+
+.guide-accordion > summary::after {
+    content: '▾';
+    float: right;
+    color: var(--accent);
+    opacity: 0.85;
+}
+
+.guide-accordion[open] > summary::after {
+    transform: rotate(180deg);
+    display: inline-block;
+}
+
+.guide-body {
+    padding: 0.9rem 1rem 1rem 1rem;
+    border-top: 1px solid rgba(0, 212, 170, 0.12);
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.guide-body h4 {
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin: 0.9rem 0 0.5rem 0;
+}
+
+.guide-body ul, .guide-body ol {
+    margin: 0.5rem 0 0 1.1rem;
+}
+
+.guide-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.code-block {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 212, 170, 0.2);
+    border-radius: 10px;
+    padding: 0.85rem;
+    overflow: auto;
+    margin: 0.5rem 0 0.75rem 0;
+}
+
+.code-block code {
+    color: #e6edf3;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    white-space: pre;
+}
+
+@media (max-width: 700px) {
+    .guide-two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .code-block code {
+        font-size: 0.82rem;
+    }
+}
+
 @media (max-width: 768px) {
     .cozum-compare {
         grid-template-columns: 1fr;
