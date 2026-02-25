@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Python ve Haritalandırma Rehberi | RadMap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">RadMap</a>
+            <ul>
+                <li><a href="index.html">Ana Sayfa</a></li>
+                <li><a href="malzemeler.html">Malzemeler</a></li>
+                <li><a href="proje.html">Proje Süreci</a></li>
+                <li><a href="olcum-sonuclari.html">Ölçüm Sonuçları</a></li>
+                <li><a href="takim.html">Takım</a></li>
+                <li><a href="portfolyo.html">Proje Çıktıları</a></li>
+                <li><a href="rehberler.html">Kod Rehberleri</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Python ve 3B Haritalandırma Rehberi</h1>
+            <p class="tagline">Lise öğrencileri için: Ölçüm verisinden Google Earth haritasına adım adım</p>
+        </section>
+
+        <section>
+            <div class="guide-grid">
+                <div class="guide-card guide-card-wide">
+                    <h3>Bu rehber ne anlatıyor?</h3>
+                    <p class="guide-desc">Arduino ile topladığımız <strong>radyasyon + konum</strong> verisi (LOG.csv) bilgisayara alındıktan sonra <strong>Python</strong> ile işlenir ve <strong>Google Earth</strong>’te açabileceğimiz bir <strong>KML</strong> dosyasına dönüştürülür. Bu sayfada hangi Python kodunun ne işe yaradığını, satır satır değil ama blok blok ve net bir şekilde bulacaksınız.</p>
+
+                    <details class="guide-accordion" open>
+                        <summary><strong>Genel akış (önce bunu kavra)</strong></summary>
+                        <div class="guide-body">
+                            <ol style="line-height:1.8;">
+                                <li><strong>Arduino</strong> → Ölçümleri LOG.csv dosyasına yazar (Tarih, Saat, Enlem, Boylam, CPM, uSv/h, Uydu).</li>
+                                <li><strong>SD kartı</strong> bilgisayara takılır; LOG.csv (veya benzeri veri) kopyalanır.</li>
+                                <li>İstersen <strong>CSV’yi JSON</strong> formatına çevirirsin (aşağıda örnek var). Projede bazen doğrudan <code>drone_data_paper.json</code> kullanılıyor.</li>
+                                <li><strong>Python scripti</strong> (<code>generate_kml.py</code>) bu JSON’u okur; her ölçüm noktası için küçük renkli bir “kare” (poligon) üretir. Radyasyon değerine göre renk değişir (mavi = düşük, kırmızı = yüksek).</li>
+                                <li>Oluşan <strong>KML dosyası</strong> Google Earth’te açılır; 3B harita böylece görünür.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary><strong>Hangi kısım ne işe yarıyor? (Özet tablo)</strong></summary>
+                        <div class="guide-body">
+                            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                                <tr style="background:rgba(0,212,170,0.15);"><th style="padding:0.4rem; text-align:left;">Kod / kısım</th><th style="padding:0.4rem; text-align:left;">Ne işe yarar?</th></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>import pandas, json</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Veriyi tablo gibi kullanmak (pandas) ve JSON dosyasını okumak (json) için.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>open(...) + json.load()</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">JSON dosyasını açar ve Python listesi/sözlüğüne çevirir.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>pd.DataFrame(data)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Veriyi tabloya (satır/sütun) dönüştürür; her satır bir ölçüm noktası.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>center_lat, center_lon</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Tüm noktaların ortası; Google Earth açıldığında kameranın baktığı yer.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>VMIN, VMAX</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Radyasyon renk ölçeğinin alt ve üst sınırı (bu aralık renklere yansır).</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>chart_val</code> ve <code>norm</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Radyasyonu önce bu aralığa sıkıştırır (clamp), sonra 0–1 arasına normalize eder (renk seçimi için).</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Renk seçimi (<code>if norm &lt; 0.2...</code>)</td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">norm değerine göre mavi → cyan → yeşil → sarı → kırmızı atar.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>c1, c2, c3, c4</code> ve <code>coords_str</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Her nokta için küçük bir karenin dört köşesinin koordinatları (boylam, enlem, yükseklik).</td></tr>
+                                <tr><td style="padding:0.35rem;"><code>Placemark</code> yazmak</td><td style="padding:0.35rem;">KML dosyasına o kareyi (poligon), rengini ve açıklamasını yazar.</td></tr>
+                            </table>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>1. Kütüphaneler ve dosyayı açma</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> <code>pandas</code> tablo işlemleri (satır/sütun), <code>json</code> ise JSON dosyasını okumak için kullanılır. Sonra <code>drone_data_paper.json</code> dosyası açılıp içeriği <code>data</code> değişkenine alınır; <code>pd.DataFrame(data)</code> ile her ölçüm bir satır olacak şekilde tabloya dönüştürülür.</p>
+                            <pre class="code-block"><code>import pandas as pd
+import json
+
+with open('drone_data_paper.json', 'r') as f:
+    data = json.load(f)
+
+df = pd.DataFrame(data)</code></pre>
+                            <p><strong>Tablo (df)</strong> şu sütunlara sahip olmalı: <strong>Enlem (Lat)</strong>, <strong>Boylam (Lon)</strong>, <strong>Yükseklik (m)</strong>, <strong>Doz Hızı (μSv/h)</strong>. Bunlar Arduino’daki LOG.csv’deki Enlem, Boylam ve uSv/h ile aynı mantıkta.</p>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>2. Kamera merkezi (LookAt)</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> Google Earth dosyayı açtığında kameranın nereye bakacağını ayarlar. Tüm ölçüm noktalarının enlem ve boylam ortalaması alınır; böylece harita açıldığında tam ortaya bakmış olursun.</p>
+                            <pre class="code-block"><code>center_lat = df['Enlem (Lat)'].mean()
+center_lon = df['Boylam (Lon)'].mean()</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>3. Renk ölçeği: VMIN, VMAX ve hw</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> Radyasyon değerleri çok küçük veya çok büyük olabilir. <strong>VMIN</strong> ve <strong>VMAX</strong> ile “bu aralıktaki değerleri renklere yansıt” deriz. Örneğin 0,09–0,13 µSv/h aralığı seçilirse, bu aralığın dışındaki değerler de aynı sınıra sıkıştırılır; böylece küçük farklar daha net görünür. <strong>hw</strong> ise her noktanın haritada kapladığı “kare”nin yarı genişliğidir; çok büyükse kareler üst üste biner, çok küçükse görünmeyebilir.</p>
+                            <pre class="code-block"><code>VMIN = 0.090   # Renk ölçeğinin alt sınırı
+VMAX = 0.130   # Renk ölçeğinin üst sınırı
+hw = 0.000013  # Kare boyutu (yarı genişlik)</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>4. Her nokta için: radyasyon → renk</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> Tablodaki her satır (her ölçüm noktası) için sırayla: (1) Radyasyon değerini VMIN–VMAX aralığına sıkıştır (clamp), (2) 0–1 arasına normalize et, (3) Bu sayıya göre renk seç (mavi → cyan → yeşil → sarı → kırmızı).</p>
+                            <pre class="code-block"><code>for _, row in df.iterrows():
+    lat = row['Enlem (Lat)']
+    lon = row['Boylam (Lon)']
+    rad = row['Doz Hızı (μSv/h)']
+    real_altitude = row['Yükseklik (m)']
+
+    chart_val = max(VMIN, min(VMAX, rad))   # Aralığa sıkıştır
+    norm = (chart_val - VMIN) / (VMAX - VMIN)  # 0 ile 1 arası
+
+    if norm &lt; 0.2:   red, green, blue = 0, 0, 255      # Mavi
+    elif norm &lt; 0.4: red, green, blue = 0, 255, 255   # Cyan
+    elif norm &lt; 0.6: red, green, blue = 0, 255, 0      # Yeşil
+    elif norm &lt; 0.8: red, green, blue = 255, 255, 0    # Sarı
+    else:             red, green, blue = 255, 0, 0      # Kırmızı</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>5. Her nokta için: kare (poligon) koordinatları</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> Haritada her noktayı tek bir nokta değil, küçük bir “kare” (dört köşeli poligon) olarak çiziyoruz. Karenin merkezi (lon, lat, real_altitude); yarı genişlik <code>hw</code>. Dört köşenin koordinatları hesaplanıp KML formatında bir string yapılır (boylam, enlem, yükseklik).</p>
+                            <pre class="code-block"><code>c1 = f"{lon+hw},{lat+hw},{real_altitude}"
+c2 = f"{lon-hw},{lat+hw},{real_altitude}"
+c3 = f"{lon-hw},{lat-hw},{real_altitude}"
+c4 = f"{lon+hw},{lat-hw},{real_altitude}"
+coords_str = f"{c1} {c2} {c3} {c4} {c1}"   # Kapatmak için c1 tekrar</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>6. KML dosyasına yazma (Placemark)</summary>
+                        <div class="guide-body">
+                            <p><strong>Ne yapıyor?</strong> KML, XML tabanlı bir formattır. Her ölçüm için bir <code>&lt;Placemark&gt;</code> bloğu yazılır: içinde açıklama (yükseklik, doz), renk (PolyStyle) ve poligon koordinatları. Dosya adı genelde <code>drone_radiation_visualization.kml</code>; Google Earth’te File → Open ile bu dosyayı açarsın.</p>
+                            <pre class="code-block"><code>f.write(f"""
+    &lt;Placemark&gt;
+      &lt;description&gt;Alt: {real_altitude} m, Doz: {rad:.4f} uSv/h&lt;/description&gt;
+      &lt;Style&gt;&lt;PolyStyle&gt;&lt;color&gt;{color_hex}&lt;/color&gt;&lt;/PolyStyle&gt;&lt;/Style&gt;
+      &lt;Polygon&gt;
+        &lt;altitudeMode&gt;relativeToGround&lt;/altitudeMode&gt;
+        &lt;outerBoundaryIs&gt;&lt;LinearRing&gt;&lt;coordinates&gt;{coords_str}&lt;/coordinates&gt;&lt;/LinearRing&gt;&lt;/outerBoundaryIs&gt;
+      &lt;/Polygon&gt;
+    &lt;/Placemark&gt;
+""")</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion" open>
+                        <summary>7. LOG.csv’den JSON’a dönüştürme (isteğe bağlı)</summary>
+                        <div class="guide-body">
+                            <p>Arduino’dan gelen <strong>LOG.csv</strong> dosyasında sütunlar: <strong>Tarih, Saat, Enlem, Boylam, CPM, uSv/h, Uydu</strong>. <code>generate_kml.py</code> ise <strong>Enlem (Lat), Boylam (Lon), Yükseklik (m), Doz Hızı (μSv/h)</strong> sütunlarına sahip bir JSON bekliyor. Aşağıdaki örnek, CSV’yi okuyup bu formatta bir JSON dosyası üretir. (Yükseklik LOG.csv’de yoksa 0 veya sabit bir değer yazabilirsin.)</p>
+                            <pre class="code-block"><code>import csv
+import json
+
+veriler = []
+with open('LOG.csv', 'r', encoding='utf-8') as f:
+    oku = csv.DictReader(f)
+    for satir in oku:
+        veriler.append({
+            'Enlem (Lat)': float(satir['Enlem']),
+            'Boylam (Lon)': float(satir['Boylam']),
+            'Yükseklik (m)': 0.0,   # LOG.csv'de yoksa 0 veya kendi alanın
+            'Doz Hızı (μSv/h)': float(satir['uSv/h'])
+        })
+
+with open('drone_data_paper.json', 'w', encoding='utf-8') as f:
+    json.dump(veriler, f, ensure_ascii=False, indent=2)
+
+print('drone_data_paper.json olusturuldu. Simdi generate_kml.py calistir.')</code></pre>
+                        </div>
+                    </details>
+
+                    <details class="guide-accordion">
+                        <summary>Bu kodda neler var / neler yok?</summary>
+                        <div class="guide-body">
+                            <div class="guide-two-col">
+                                <div>
+                                    <h4>Var</h4>
+                                    <ul>
+                                        <li>JSON’dan veri okuma</li>
+                                        <li>Radyasyonu aralığa sıkıştırma ve 0–1’e normalize etme</li>
+                                        <li>Renk basamakları (mavi → kırmızı)</li>
+                                        <li>Google Earth için KML üretimi (poligon + renk)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4>Yok (bilerek)</h4>
+                                    <ul>
+                                        <li>Isı haritası / arada kalan alanları doldurma</li>
+                                        <li>Uçuş sırasında canlı harita</li>
+                                        <li>Otonom rota planlama</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <div style="margin-top: 1.25rem;">
+                        <a class="btn" href="rehberler.html">← Tüm rehberler</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>RadMap | SANKODE Intelligence &copy; 2025 | Codeavour 7.0 Track 1 | Temiz Gezegen, Sağlıklı İnsanlar</p>
+    </footer>
+</body>
+</html>
