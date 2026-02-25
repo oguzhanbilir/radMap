@@ -9,6 +9,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .guide-body h4 { margin-top: 1rem; }
+        .guide-body .code-caption { font-size: 0.88rem; color: var(--accent); margin-bottom: 0.35rem; }
+        .guide-body .step-num { display: inline-block; width: 1.5rem; color: var(--accent); font-weight: 700; }
+    </style>
 </head>
 <body>
     <header>
@@ -29,251 +34,356 @@
     <main>
         <section class="hero">
             <h1>Arduino Devre Kodu Rehberi</h1>
-            <p class="tagline">Geiger-Müller ölçümü, GPS (enlem, boylam, rakım), SD karta yazma, OLED ekran</p>
+            <p class="tagline">Fonksiyon fonksiyon, blok blok açıklama — öğrenciler için kapsamlı kod rehberi</p>
         </section>
 
         <section>
             <div class="guide-grid">
                 <div class="guide-card guide-card-wide">
-                    <h3>Devrede ne yapılıyor?</h3>
-                    <p class="guide-desc">RadMap devresinde <strong>Arduino Nano</strong> ile: Geiger-Müller sayacından radyasyon ölçülür, GPS’ten <strong>enlem, boylam ve rakım</strong> alınır, her ölçüm <strong>micro SD karta</strong> yazılır ve anlık değerler <strong>OLED ekranda</strong> gösterilir. Aşağıda bu akışın Arduino (C++) kodları ve açıklamaları yer alıyor.</p>
+                    <h3>Programın genel akışı</h3>
+                    <p class="guide-desc">Bu sayfada <strong>her fonksiyon</strong> ve <strong>her kod bloğu</strong> ayrı ayrı açıklanmıştır. Sırayla okuyarak Geiger ölçümü, GPS (enlem, boylam, rakım), SD karta yazma ve OLED gösterme mantığını adım adım çalışabilirsiniz.</p>
+                    <ul>
+                        <li><strong>setup()</strong> → Bir kez çalışır: pinler, kesme, OLED, SD kart hazırlanır.</li>
+                        <li><strong>loop()</strong> → Sürekli tekrarlanır: GPS okunur; her 1 saniyede CPM/µSv/h hesaplanır, SD’ye yazılır, OLED güncellenir.</li>
+                    </ul>
 
+                    <!-- ========== 1. KÜTÜPHANELER VE PIN TANIMLARI ========== -->
                     <details class="guide-accordion" open>
-                        <summary>Pin ve kütüphane tanımları</summary>
+                        <summary>1. Kütüphaneler ve pin tanımları (satır satır)</summary>
                         <div class="guide-body">
-                            <ul>
-                                <li><strong>Geiger sinyal</strong>: D2 (kesme ile sayım)</li>
-                                <li><strong>GPS</strong>: D3 = RX (GPS TX’e bağlı), D4 = TX (GPS RX’e bağlı) — SoftwareSerial</li>
-                                <li><strong>SD kart</strong>: SPI, CS = D10</li>
-                                <li><strong>OLED</strong>: I2C (SDA = A4, SCL = A5), adres 0x3C</li>
-                            </ul>
-                            <pre class="code-block"><code>#include &lt;Wire.h&gt;
-#include &lt;SPI.h&gt;
-#include &lt;SoftwareSerial.h&gt;
-#include &lt;TinyGPS++.h&gt;
-#include &lt;SD.h&gt;
+                            <p class="code-caption">Ne işe yarar?</p>
+                            <p>Bu satırlar dış kütüphaneleri programa dahil eder ve hangi Arduino pininin ne için kullanıldığını sabitler. Böylece kodda 2, 3, 4 yazmak yerine GEIGER_PIN, GPS_RX_PIN gibi anlamlı isimler kullanırız.</p>
+                            <pre class="code-block"><code>#include &lt;Wire.h&gt;           // I2C haberleşme — OLED ekran A4 (SDA), A5 (SCL) üzerinden
+#include &lt;SPI.h&gt;            // SD kart SPI ile konuşur (D10 = CS, D11 MOSI, D12 MISO, D13 SCK)
+#include &lt;SoftwareSerial.h&gt; // GPS için ikinci bir seri port (USB Serial’i PC’ye ayırıyoruz)
+#include &lt;TinyGPS++.h&gt;      // NMEA cümlelerini işleyip enlem, boylam, rakım verir
+#include &lt;SD.h&gt;             // Micro SD karta dosya yazmak için
 
-#define GEIGER_PIN 2
-#define GPS_RX_PIN 3   // GPS modül TX → Arduino RX (D3)
-#define GPS_TX_PIN 4   // GPS modül RX → Arduino TX (D4)
-#define SD_CS_PIN  10</code></pre>
+#define GEIGER_PIN 2   // Geiger-Müller TTL çıkışı bu pinde — her vuruşta sinyal gelir
+#define GPS_RX_PIN 3   // Arduino’nun RX’i — GPS modülünün TX’ine bağlanır (veri GPS’ten gelir)
+#define GPS_TX_PIN 4   // Arduino’nun TX’i — GPS modülünün RX’ine bağlanır (isteğe bağlı)
+#define SD_CS_PIN  10  // SD kart “Chip Select” — SPI’da hangi cihazın seçili olduğu</code></pre>
+                            <p><strong>Özet:</strong> Wire = OLED, SPI = SD, SoftwareSerial = GPS, TinyGPS++ = konum çözümleme, SD = dosya. Pinler: D2 Geiger, D3–D4 GPS, D10 SD.</p>
                         </div>
                     </details>
 
+                    <!-- ========== 2. OLED FONKSİYONLARI ========== -->
                     <details class="guide-accordion" open>
-                        <summary>Geiger sayımı (kesme ile)</summary>
+                        <summary>2. OLED ekran fonksiyonları (fonksiyon fonksiyon)</summary>
                         <div class="guide-body">
-                            <p>Geiger-Müller tüpü her radyasyon olayında TTL çıkışta kısa bir darbe üretir. Bu darbeler D2 pinine bağlıdır; <strong>kesme (interrupt)</strong> ile sayılır. Gürültüyü azaltmak için 200 µs’den kısa aralıklar yok sayılır.</p>
-                            <pre class="code-block"><code>volatile uint32_t pulseCount = 0;
-volatile uint32_t lastInterruptTime = 0;
+                            <h4>2.1 oledCmd(uint8_t c) — Tek komut gönderir</h4>
+                            <p><strong>Ne yapar?</strong> OLED ekran I2C adresi 0x3C’tir. Ekrana “komut” göndermek için önce 0x00 (komut modu), sonra komut baytı yazılır. Bu fonksiyon tam olarak bunu yapar.</p>
+                            <p><strong>Parametre:</strong> <code>c</code> — SSD1306 ekran komutu (örn. 0xAE = display off).</p>
+                            <pre class="code-block"><code>void oledCmd(uint8_t c) {
+  Wire.beginTransmission(OLED_ADDR);  // I2C adresi 0x3C’e başla
+  Wire.write(0x00);                    // Sonraki byte komut (0x40 olsaydı veri olurdu)
+  Wire.write(c);                       // Komutu gönder
+  Wire.endTransmission();              // I2C iletimini bitir
+}</code></pre>
 
-void geigerISR() {
-  uint32_t now = micros();
-  if (now - lastInterruptTime &gt; 200) {
-    pulseCount++;
-    lastInterruptTime = now;
+                            <h4>2.2 oledInit() — Ekranı başlatır</h4>
+                            <p><strong>Ne yapar?</strong> I2C’i açar, ekrana sırayla başlatma komutları gönderir (frekans, çoklayıcı, offset, açma vb.). Bu komutlar SSD1306 veri sayfasından alınır; ekran açıldıktan sonra pikselleri yazabiliriz.</p>
+                            <pre class="code-block"><code>void oledInit() {
+  Wire.begin();      // I2C iletişimini başlat (A4=SDA, A5=SCL)
+  delay(100);        // Ekranın hazır olmasını bekle
+  oledCmd(0xAE);     // Display off
+  oledCmd(0xD5); oledCmd(0x80);  // Clock ayarı
+  oledCmd(0xA8); oledCmd(0x3F);  // Çoklayıcı (64 satır)
+  oledCmd(0xD3); oledCmd(0x00);  // Display offset
+  oledCmd(0x40);     // Başlangıç satırı
+  oledCmd(0x8D); oledCmd(0x14);  // Charge pump
+  oledCmd(0x20); oledCmd(0x02);  // Yatay adresleme
+  oledCmd(0xA1); oledCmd(0xC8);  // Segment remap, COM scan
+  oledCmd(0xDA); oledCmd(0x12);  // COM pins
+  oledCmd(0x81); oledCmd(0x7F);  // Kontrast
+  oledCmd(0xD9); oledCmd(0xF1);  // Precharge
+  oledCmd(0xDB); oledCmd(0x40);  // VCOMH
+  oledCmd(0xA4); oledCmd(0xA6);  // Tüm pikseller normal, normal renk
+  oledCmd(0xAF);     // Display on
+  delay(100);
+}</code></pre>
+
+                            <h4>2.3 oledClearPage(uint8_t page) — Tek sayfayı siler</h4>
+                            <p><strong>Ne yapar?</strong> OLED 128x64 piksel; dikeyde 8 “sayfa” (her sayfa 8 piksel yükseklik). Bu fonksiyon verilen sayfa numarasındaki tüm sütunları 0 yapar (siyah).</p>
+                            <p><strong>Blok açıklaması:</strong> Önce sayfa adresi (0xB0 + page), sonra sütun adresi ayarlanır; 16’şar bayt veri (0) gönderilir. WIRE_CHUNK=16 çünkü I2C’te çok uzun veri tek seferde gönderilmez.</p>
+                            <pre class="code-block"><code>void oledClearPage(uint8_t page) {
+  for (uint8_t col = 0; col &lt; OLED_W; col += WIRE_CHUNK) {
+    oledCmd(0xB0 + page);              // Sayfa seç (0..7)
+    oledCmd(0x00 | (col & 0x0F));      // Sütun düşük 4 bit
+    oledCmd(0x10 | (col &gt;&gt; 4));        // Sütun yüksek bitler
+    Wire.beginTransmission(OLED_ADDR);
+    Wire.write(0x40);                  // 0x40 = veri modu (komut değil)
+    uint8_t n = (col + WIRE_CHUNK &lt;= OLED_W) ? WIRE_CHUNK : (OLED_W - col);
+    for (uint8_t i = 0; i &lt; n; i++) Wire.write(0);  // Sıfırları yaz
+    Wire.endTransmission();
   }
+}</code></pre>
+
+                            <h4>2.4 oledClear() — Tüm ekranı siler</h4>
+                            <p><strong>Ne yapar?</strong> 8 sayfanın hepsini tek tek siler; ekran tamamen siyah olur.</p>
+                            <pre class="code-block"><code>void oledClear() {
+  for (uint8_t p = 0; p &lt; OLED_PAGES; p++) oledClearPage(p);
+}</code></pre>
+
+                            <h4>2.5 charToIdx(char c) — Harf → font indeksi</h4>
+                            <p><strong>Ne yapar?</strong> Ekranda yazı göstermek için 5x7 piksel font kullanıyoruz. Her karakter (boşluk, rakam, harf, nokta vb.) font dizisinde bir indekse karşılık gelir. Bu fonksiyon verilen karakteri o indekse çevirir.</p>
+                            <pre class="code-block"><code>uint8_t charToIdx(char c) {
+  if (c == ' ') return 0;
+  if (c &gt;= '0' &amp;&amp; c &lt;= '9') return 1 + (c - '0');   // 0→1, 1→2, ... 9→10
+  if (c == '.') return 11;
+  if (c == ':') return 12;
+  if (c == '-') return 13;
+  // C, P, M, u, S, v, h, D, R, O, N, E, L, A, B, t, i, y, r, a, l, !, U, Y, I, /
+  // ... (kodda hepsi var)
+  return 0;
+}</code></pre>
+
+                            <h4>2.6 oledDrawChar(x, page, c) — Tek karakter çizer</h4>
+                            <p><strong>Ne yapar?</strong> (x, page) konumuna tek bir karakter çizer. Önce o konuma cursor gider (sayfa + sütun komutları), sonra font5x7 dizisinden 5 sütunluk veri 0x40 (veri) ile yazılır.</p>
+                            <pre class="code-block"><code>void oledDrawChar(uint8_t x, uint8_t page, char c) {
+  uint8_t idx = charToIdx(c);
+  if (idx &gt; 39) idx = 0;
+  oledCmd(0xB0 + page);      // Sayfa
+  oledCmd(0x00 | (x & 0x0F));
+  oledCmd(0x10 | (x &gt;&gt; 4));
+  Wire.beginTransmission(OLED_ADDR);
+  Wire.write(0x40);
+  for (uint8_t col = 0; col &lt; 5; col++)
+    Wire.write(pgm_read_byte(&amp;font5x7[idx][col]));  // PROGMEM’den oku
+  Wire.endTransmission();
+}</code></pre>
+
+                            <h4>2.7 oledPrint(x, page, s) — Metin yazar</h4>
+                            <p><strong>Ne yapar?</strong> Verilen string’i (s) soldan itibaren (x, page) konumuna yazar. Her karakter 6 birim sağa kayar; satır taşarsa bir sonraki sayfaya geçer.</p>
+                            <pre class="code-block"><code>void oledPrint(uint8_t x, uint8_t page, const char* s) {
+  while (*s) {
+    oledDrawChar(x, page, *s++);
+    x += 6;
+    if (x &gt;= 124) { x = 0; page++; }
+  }
+}</code></pre>
+
+                            <h4>2.8 oledPrintNum / oledPrintFloat — Sayı yazar</h4>
+                            <p><strong>Ne yapar?</strong> Tam sayıyı veya ondalıklı sayıyı stringe çevirip oledPrint ile yazar. <code>itoa</code> tam sayı, <code>dtostrf</code> float için kullanılır.</p>
+                            <pre class="code-block"><code>void oledPrintNum(uint8_t x, uint8_t page, uint32_t n) {
+  char buf[12];
+  itoa((int)n, buf, 10);   // 10’luk tabanda string yap
+  oledPrint(x, page, buf);
 }
 
-// setup() içinde:
-pinMode(GEIGER_PIN, INPUT);
-attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);</code></pre>
-                        </div>
-                    </details>
-
-                    <details class="guide-accordion" open>
-                        <summary>CPM ve µSv/h hesaplama (60 saniyelik pencere)</summary>
-                        <div class="guide-body">
-                            <p>Her saniye kesmeden gelen toplam vuruş alınır; son 60 saniyelik dairesel tampon ile <strong>CPM (dakikadaki vuruş)</strong> hesaplanır. CPM, kalibrasyon katsayısı ile <strong>µSv/h</strong> (mikrosievert/saat) değerine çevrilir.</p>
-                            <pre class="code-block"><code>uint8_t counts[60];
-uint8_t bufferIndex = 0;
-uint32_t totalCountsInWindow = 0;
-uint32_t uptimeSeconds = 0;
-
-// Her saniye (loop içinde):
-noInterrupts();
-uint8_t currentSecCounts = pulseCount;
-pulseCount = 0;
-interrupts();
-
-totalCountsInWindow -= counts[bufferIndex];
-counts[bufferIndex] = currentSecCounts;
-totalCountsInWindow += currentSecCounts;
-bufferIndex = (bufferIndex + 1) % 60;
-
-uint32_t cpm = (uptimeSeconds &lt; 60)
-  ? (totalCountsInWindow * 60) / (uptimeSeconds ? uptimeSeconds : 1)
-  : totalCountsInWindow;
-
-float usvh = cpm * 0.00812f;   // CPM → µSv/h (kalibrasyon katsayısı)</code></pre>
-                        </div>
-                    </details>
-
-                    <details class="guide-accordion" open>
-                        <summary>GPS: enlem, boylam, rakım</summary>
-                        <div class="guide-body">
-                            <p>GPS modülü NMEA cümleleri üretir; <strong>TinyGPS++</strong> bu cümleleri işleyerek enlem, boylam ve rakım (yükseklik) verir. Arduino’da D3/D4 üzerinden SoftwareSerial ile okunur.</p>
-                            <pre class="code-block"><code>TinyGPSPlus gps;
-SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);
-
-// loop() içinde sürekli:
-while (gpsSerial.available()) {
-  gps.encode(gpsSerial.read());
-}
-
-// Değerleri almak için:
-float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
-float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
-float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;</code></pre>
-                        </div>
-                    </details>
-
-                    <details class="guide-accordion" open>
-                        <summary>Micro SD karta yazma (CSV)</summary>
-                        <div class="guide-body">
-                            <p>Her ölçümde CPM, µSv/h, enlem, boylam ve rakım <strong>log.txt</strong> dosyasına virgülle ayrılmış (CSV) olarak eklenir. 3B haritalandırma ve analiz bu dosyadan yapılabilir.</p>
-                            <pre class="code-block"><code>void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
-  File f = SD.open("log.txt", FILE_WRITE);
-  if (!f) return;
-  f.print(millis()); f.print(",");
-  f.print(cpm); f.print(",");
-  f.print(usvh, 3); f.print(",");
-  f.print(lat, 6); f.print(",");
-  f.print(lng, 6); f.print(",");
-  f.println(alt, 2);   // rakım (metre)
-  f.close();
-}
-
-// setup() içinde:
-if (!SD.begin(SD_CS_PIN)) {
-  // SD yok veya hata – ekranda uyarı gösterilebilir
+void oledPrintFloat(uint8_t x, uint8_t page, float f, uint8_t decimals) {
+  char buf[16];
+  dtostrf(f, 0, decimals, buf);  // ondalık basamak sayısı = decimals
+  oledPrint(x, page, buf);
 }</code></pre>
                         </div>
                     </details>
 
+                    <!-- ========== 3. GEIGER KESME VE DEĞİŞKENLER ========== -->
                     <details class="guide-accordion" open>
-                        <summary>OLED ekranda ölçüm gösterme</summary>
+                        <summary>3. Geiger sayacı: değişkenler ve kesme (geigerISR)</summary>
                         <div class="guide-body">
-                            <p>I2C OLED (128x64) üzerinde başlık, CPM, µSv/h ve GPS durumu (OK / bekleniyor) gösterilir. Projede bazen hazır kütüphane (örn. SSD1306Ascii), bazen de doğrudan I2C komutları (oledCmd, oledPrint) kullanılır.</p>
-                            <pre class="code-block"><code>// Ekran güncellemesi (her saniye):
-oledClear();
-oledPrint(0, 0, "DRONE MULLER");
-oledPrint(0, 2, "CPM: ");
-oledPrintNum(30, 2, cpm);
-oledPrint(0, 4, "uSv/h: ");
-oledPrintFloat(42, 4, usvh, 3);
-if (gps.location.isValid()) {
-  oledPrint(0, 6, "GPS OK");
+                            <p class="code-caption">Neden kesme (interrupt) kullanıyoruz?</p>
+                            <p>Geiger tüpü radyasyonu algıladığında TTL çıkışta çok kısa bir darbe (birkaç mikrosaniye) üretir. Bu darbeleri <code>loop()</code> içinde <code>digitalRead</code> ile okumaya çalışırsak birçoğunu kaçırabiliriz. Kesme kullanınca her yükselen kenar (RISING) geldiğinde <code>geigerISR</code> otomatik çağrılır ve sayacı artırırız.</p>
+                            <h4>3.1 Global değişkenler</h4>
+                            <pre class="code-block"><code>uint8_t counts[60];           // Son 60 saniyenin her birindeki vuruş sayısı (dairesel tampon)
+uint8_t bufferIndex = 0;       // Tamponda “şu an yazılan yer” indeksi (0..59)
+uint32_t totalCountsInWindow = 0;  // Son 60 saniyedeki toplam vuruş (CPM hesabı için)
+uint32_t uptimeSeconds = 0;   // Açılıştan beri kaç saniye geçti
+uint32_t lastLogTime = 0;      // Son 1 saniyelik işlemin yapıldığı zaman (millis())
+
+volatile uint32_t pulseCount = 0;        // Kesme içinde artırılan vuruş sayacı (1 saniyede kaç vuruş)
+volatile uint32_t lastInterruptTime = 0; // Son kesme zamanı — gürültü filtrelemek için</code></pre>
+                            <p><strong>volatile ne demek?</strong> Kesme fonksiyonu ana programdan bağımsız çalıştığı için derleyici bu değişkeni “optimize” edip silmesin diye <code>volatile</code> yazarız.</p>
+                            <h4>3.2 geigerISR() — Kesme fonksiyonu (satır satır)</h4>
+                            <pre class="code-block"><code>void geigerISR() {
+  uint32_t now = micros();                          // Şu anki zaman (mikrosaniye)
+  if (now - lastInterruptTime &gt; 200) {              // Son darbeden 200 µs geçmiş mi?
+    pulseCount++;                                    // Evet → gerçek vuruş say, 1 artır
+    lastInterruptTime = now;                         // Bu darbenin zamanını kaydet
+  }
+  // 200 µs’den kısa aralıkları sayma — elektrik gürültüsü çift sayımı engeller
+}</code></pre>
+                            <p><strong>setup() içinde bağlama:</strong></p>
+                            <pre class="code-block"><code>pinMode(GEIGER_PIN, INPUT);  // D2’yi giriş yap
+attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);
+// D2 pininde yükselen kenar (LOW→HIGH) olduğunda geigerISR çağrılır</code></pre>
+                        </div>
+                    </details>
+
+                    <!-- ========== 4. CPM HESAPLAMA (60 SN PENCERE) ========== -->
+                    <details class="guide-accordion" open>
+                        <summary>4. CPM ve µSv/h hesaplama (blok blok)</summary>
+                        <div class="guide-body">
+                            <p><strong>CPM</strong> = Counts Per Minute (dakikadaki vuruş sayısı). Radyasyon şiddeti CPM ile orantılıdır. <strong>µSv/h</strong> = mikrosievert/saat; doz hızı birimi. Formül: <code>µSv/h = CPM × 0.00812</code> (sensör kalibrasyon katsayısı).</p>
+                            <p><strong>Neden 60 saniyelik pencere?</strong> Tek saniyedeki vuruş sayısı çok dalgalı olabilir. Son 60 saniyeyi kullanarak “kaydırmalı ortalama” alıyoruz; değer daha kararlı olur.</p>
+                            <h4>4.1 Her saniye yapılan işlem (loop içinde)</h4>
+                            <p class="code-caption">Adım 1: Kesmeyi kapat, sayacı oku ve sıfırla</p>
+                            <pre class="code-block"><code>noInterrupts();                    // Kesmeleri geçici kapat (sayıyı okurken değişmesin)
+uint8_t currentSecCounts = pulseCount;  // Bu saniyedeki vuruş sayısını kopyala
+pulseCount = 0;                         // Sıfırla — önümüzdeki saniye için yeniden sayılacak
+interrupts();                           // Kesmeleri tekrar aç</code></pre>
+                            <p class="code-caption">Adım 2: Dairesel tamponu güncelle (60 elemanlı)</p>
+                            <pre class="code-block"><code>totalCountsInWindow -= counts[bufferIndex];  // Eski değeri pencereden çıkar
+counts[bufferIndex] = currentSecCounts;       // Bu saniyenin sayısını yaz
+totalCountsInWindow += currentSecCounts;      // Toplama ekle
+bufferIndex = (bufferIndex + 1) % 60;         // İndeksi ilerlet (59’dan sonra 0)</code></pre>
+                            <p class="code-caption">Adım 3: CPM hesapla</p>
+                            <pre class="code-block"><code>uint32_t cpm = 0;
+if (uptimeSeconds &lt; 60) {
+  if (uptimeSeconds &gt; 0)
+    cpm = (totalCountsInWindow * 60) / uptimeSeconds;  // Henüz 60 sn dolmadıysa oranla
 } else {
-  oledPrint(0, 6, "GPS bekleniyor");
+  cpm = totalCountsInWindow;   // Tam 60 saniye doldu → toplam vuruş = CPM
+}</code></pre>
+                            <p class="code-caption">Adım 4: µSv/h’a çevir</p>
+                            <pre class="code-block"><code>float usvh = cpm * 0.00812;   // Kalibrasyon katsayısı (sensör veri sayfasından)</code></pre>
+                        </div>
+                    </details>
+
+                    <!-- ========== 5. GPS VE writeToSD ========== -->
+                    <details class="guide-accordion" open>
+                        <summary>5. GPS okuma ve SD karta yazma (writeToSD)</summary>
+                        <div class="guide-body">
+                            <h4>5.1 GPS nesneleri</h4>
+                            <pre class="code-block"><code>TinyGPSPlus gps;   // NMEA cümlelerini parse eder, .location.lat(), .location.lng(), .altitude.meters() verir
+SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);  // D3=RX, D4=TX — GPS modülüyle 9600 baud</code></pre>
+                            <h4>5.2 GPS verisini okumak (loop içinde sürekli)</h4>
+                            <p>GPS modülü sürekli NMEA cümleleri (örn. $GPGGA, $GPRMC) yollar. Her gelen byte’ı <code>gps.encode()</code> ile veririz; kütüphane içeride cümleleri birleştirir ve enlem, boylam, rakım güncellenir.</p>
+                            <pre class="code-block"><code>while (gpsSerial.available()) {
+  gps.encode(gpsSerial.read());   // Bir byte oku, TinyGPS’e ver
+}</code></pre>
+                            <h4>5.3 Enlem, boylam, rakım alma</h4>
+                            <pre class="code-block"><code>float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;  // Enlem (-90..90)
+float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;  // Boylam (-180..180)
+float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rakım (metre)</code></pre>
+                            <p><strong>isValid() neden önemli?</strong> Uydu kilidi yokken değerler anlamsız olur; geçerli mi diye kontrol ediyoruz.</p>
+                            <h4>5.4 writeToSD() — Fonksiyonun tam açıklaması</h4>
+                            <p><strong>Ne yapar?</strong> log.txt dosyasını açar (yoksa oluşturur), tek satır yazar: zaman, CPM, µSv/h, enlem, boylam, rakım — virgülle ayrılmış (CSV). Sonra dosyayı kapatır.</p>
+                            <pre class="code-block"><code>void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
+  File f = SD.open("log.txt", FILE_WRITE);  // Dosyayı yazma modunda aç (sonuna ekleme)
+  if (!f) return;   // Açılamadıysa (SD yok / hata) çık
+
+  f.print(millis()); f.print(",");   // Açılıştan beri geçen ms
+  f.print(cpm); f.print(",");        // CPM
+  f.print(usvh, 3); f.print(",");   // µSv/h (3 ondalık)
+  f.print(lat, 6); f.print(",");    // Enlem (6 ondalık)
+  f.print(lng, 6); f.print(",");    // Boylam (6 ondalık)
+  f.println(alt, 2);                 // Rakım (2 ondalık) + satır sonu
+
+  f.close();   // Yazmayı bitir, dosyayı kapat
 }</code></pre>
                         </div>
                     </details>
 
-                    <details class="guide-accordion">
-                        <summary>Ana döngü (loop) özeti</summary>
+                    <!-- ========== 6. setup() BLOK BLOK ========== -->
+                    <details class="guide-accordion" open>
+                        <summary>6. setup() — Açılışta bir kez (blok blok)</summary>
                         <div class="guide-body">
-                            <ol>
-                                <li>GPS’ten gelen veriyi oku (NMEA → TinyGPS++)</li>
-                                <li>Her 1 saniyede bir: kesmeden pulse sayısını al, CPM ve µSv/h hesapla</li>
-                                <li>GPS’ten enlem, boylam, rakım al</li>
-                                <li>SD karta satır yaz (zaman, CPM, µSv/h, enlem, boylam, rakım)</li>
-                                <li>OLED’i güncelle (CPM, µSv/h, GPS durumu)</li>
-                            </ol>
-                        </div>
-                    </details>
+                            <p><strong>setup()</strong> Arduino açıldığında veya resetlendiğinde yalnızca bir kez çalışır. Amaç: seri portları, pinleri, kesmeyi, OLED’i ve SD kartı hazırlamak.</p>
+                            <pre class="code-block"><code>void setup() {
+  Serial.begin(9600);           // USB seri port — bilgisayarda Serial Monitor ile debug
+  gpsSerial.begin(9600);        // GPS modülü 9600 baud kullanır
 
-                    <details class="guide-accordion">
-                        <summary>Tam örnek kod (tek dosya özeti)</summary>
-                        <div class="guide-body">
-                            <p>Aşağıda tüm parçaların bir araya getirilmiş hali yer alıyor. Proje klasöründeki <code>DroneMuller_Full.ino</code> dosyası bu yapıdadır; rakım (altitude) SD yazımına eklenerek 3B haritalandırma için kullanılabilir.</p>
-                            <pre class="code-block"><code>/*
- * DRONE MÜLLER - Tam Sistem (Geiger + OLED + GPS + SD)
- * Geiger ölçümü, GPS (enlem/boylam/rakım), SD karta CSV, OLED gösterim
- */
-#include &lt;Wire.h&gt;
-#include &lt;SPI.h&gt;
-#include &lt;SoftwareSerial.h&gt;
-#include &lt;TinyGPS++.h&gt;
-#include &lt;SD.h&gt;
+  pinMode(GEIGER_PIN, INPUT);   // D2 = giriş
+  attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);  // Her HIGH’da geigerISR çağrılır
 
-#define GEIGER_PIN 2
-#define GPS_RX_PIN 3
-#define GPS_TX_PIN 4
-#define SD_CS_PIN  10
-
-volatile uint32_t pulseCount = 0;
-volatile uint32_t lastInterruptTime = 0;
-uint8_t counts[60], bufferIndex = 0;
-uint32_t totalCountsInWindow = 0, uptimeSeconds = 0, lastLogTime = 0;
-
-TinyGPSPlus gps;
-SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);
-
-void geigerISR() {
-  uint32_t now = micros();
-  if (now - lastInterruptTime &gt; 200) {
-    pulseCount++;
-    lastInterruptTime = now;
-  }
-}
-
-void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
-  File f = SD.open("log.txt", FILE_WRITE);
-  if (!f) return;
-  f.print(millis()); f.print(",");
-  f.print(cpm); f.print(",");
-  f.print(usvh, 3); f.print(",");
-  f.print(lat, 6); f.print(",");
-  f.print(lng, 6); f.print(",");
-  f.println(alt, 2);
-  f.close();
-}
-
-void setup() {
-  Serial.begin(9600);
-  gpsSerial.begin(9600);
-  pinMode(GEIGER_PIN, INPUT);
-  attachInterrupt(digitalPinToInterrupt(GEIGER_PIN), geigerISR, RISING);
-  oledInit();   // I2C OLED başlat
-  oledClear();
+  oledInit();                   // I2C ve OLED komutları ile ekranı aç
+  oledClear();                  // Ekranı temizle
   oledPrint(0, 0, "DRONE MULLER");
-  oledPrint(0, 2, "Baslatiliyor...");
-  if (!SD.begin(SD_CS_PIN)) { oledPrint(0, 4, "SD HATA!"); delay(2000); }
-  memset(counts, 0, sizeof(counts));
-  lastLogTime = millis();
-}
+  oledPrint(0, 2, "Baslatiliyor...");   // Kullanıcıya mesaj
 
-void loop() {
-  while (gpsSerial.available()) gps.encode(gpsSerial.read());
-
-  if (millis() - lastLogTime &gt;= 1000) {
-    lastLogTime = millis();
-    uptimeSeconds++;
-    noInterrupts();
-    uint8_t n = pulseCount;
-    pulseCount = 0;
-    interrupts();
-    totalCountsInWindow -= counts[bufferIndex];
-    counts[bufferIndex] = n;
-    totalCountsInWindow += n;
-    bufferIndex = (bufferIndex + 1) % 60;
-    uint32_t cpm = (uptimeSeconds &lt; 60) ? (uptimeSeconds ? (totalCountsInWindow * 60 / uptimeSeconds) : 0) : totalCountsInWindow;
-    float usvh = cpm * 0.00812f;
-    float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
-    float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
-    float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;
-    writeToSD(cpm, usvh, lat, lng, alt);
-    oledClear();
-    oledPrint(0, 0, "DRONE MULLER");
-    oledPrint(0, 2, "CPM: ");
-    oledPrintNum(30, 2, cpm);
-    oledPrint(0, 4, "uSv/h: ");
-    oledPrintFloat(42, 4, usvh, 3);
-    oledPrint(0, 6, gps.location.isValid() ? "GPS OK" : "GPS bekleniyor");
+  if (!SD.begin(SD_CS_PIN)) {   // SD kartı D10 (CS) ile başlat
+    oledPrint(0, 4, "SD HATA!");       // Başarısızsa uyarı
+    delay(2000);
   }
+
+  memset(counts, 0, sizeof(counts));  // counts[] dizisini 0’la
+  lastLogTime = millis();             // İlk 1 sn sayacını başlat
 }</code></pre>
-                            <p><strong>Not:</strong> <code>oledInit</code>, <code>oledClear</code>, <code>oledPrint</code>, <code>oledPrintNum</code>, <code>oledPrintFloat</code> fonksiyonları proje içindeki tam firmware dosyasında (OLED I2C komutları ve 5x7 font) ile tanımlıdır.</p>
+                            <p><strong>Blok özeti:</strong> Seri (USB + GPS) → Geiger pini + kesme → OLED başlat + başlık → SD başlat (yoksa hata yaz) → sayacı sıfırla, zamanı kaydet.</p>
+                        </div>
+                    </details>
+
+                    <!-- ========== 7. loop() BLOK BLOK ========== -->
+                    <details class="guide-accordion" open>
+                        <summary>7. loop() — Ana döngü (blok blok)</summary>
+                        <div class="guide-body">
+                            <p><strong>loop()</strong> sürekli tekrarlanır. İki ana iş var: (1) GPS’ten gelen her byte’ı işlemek, (2) her 1 saniyede bir ölçüm yapıp SD’ye yazmak ve ekranı güncellemek.</p>
+                            <p class="code-caption">Blok 1: GPS verisini işle</p>
+                            <pre class="code-block"><code>while (gpsSerial.available()) {
+  gps.encode(gpsSerial.read());
+}</code></pre>
+                            <p>Bu blok her loop’ta çalışır; gelen byte kalmayana kadar okur. Böylece NMEA cümleleri yarıda kalmaz.</p>
+                            <p class="code-caption">Blok 2: 1 saniye doldu mu kontrol et</p>
+                            <pre class="code-block"><code>if (millis() - lastLogTime &gt;= 1000) {
+  lastLogTime = millis();   // Bir sonraki 1 sn için zamanı kaydet
+  uptimeSeconds++;          // Toplam çalışma saniyesini artır</code></pre>
+                            <p class="code-caption">Blok 3: Kesmeden pulse sayısını al</p>
+                            <pre class="code-block"><code>  noInterrupts();
+  uint8_t currentSecCounts = pulseCount;
+  pulseCount = 0;
+  interrupts();</code></pre>
+                            <p class="code-caption">Blok 4: Dairesel tampon + CPM + µSv/h</p>
+                            <pre class="code-block"><code>  totalCountsInWindow -= counts[bufferIndex];
+  counts[bufferIndex] = currentSecCounts;
+  totalCountsInWindow += currentSecCounts;
+  bufferIndex = (bufferIndex + 1) % 60;
+
+  uint32_t cpm = 0;
+  if (uptimeSeconds &lt; 60) {
+    if (uptimeSeconds &gt; 0) cpm = (totalCountsInWindow * 60) / uptimeSeconds;
+  } else {
+    cpm = totalCountsInWindow;
+  }
+  float usvh = cpm * 0.00812;</code></pre>
+                            <p class="code-caption">Blok 5: GPS değerlerini al</p>
+                            <pre class="code-block"><code>  float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
+  float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
+  float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;</code></pre>
+                            <p class="code-caption">Blok 6: SD karta yaz (ve Serial’e debug)</p>
+                            <pre class="code-block"><code>  writeToSD(cpm, usvh, lat, lng, alt);   // CSV satırı ekle
+
+  Serial.print(F("CPM:")); Serial.print(cpm);
+  Serial.print(F(" uSv/h:")); Serial.print(usvh, 3);
+  Serial.print(F(" Lat:")); Serial.print(lat, 6);
+  Serial.print(F(" Lng:")); Serial.println(lng, 6);</code></pre>
+                            <p class="code-caption">Blok 7: OLED’i güncelle</p>
+                            <pre class="code-block"><code>  oledClear();
+  oledPrint(0, 0, "DRONE MULLER");
+  oledPrint(0, 2, "CPM: ");
+  oledPrintNum(30, 2, cpm);
+  oledPrint(0, 4, "uSv/h: ");
+  oledPrintFloat(42, 4, usvh, 3);
+  if (gps.location.isValid())
+    oledPrint(0, 6, "GPS OK");
+  else
+    oledPrint(0, 6, "GPS bekleniyor");
+}
+// if (millis() - lastLogTime >= 1000) sonu</code></pre>
+                            <p>Yani her saniye: sayacı oku → CPM/µSv/h hesapla → GPS’ten lat/lng/alt al → SD’ye yaz → ekranda göster.</p>
+                        </div>
+                    </details>
+
+                    <!-- ========== 8. TAM KOD ÖZET ========== -->
+                    <details class="guide-accordion">
+                        <summary>8. Tam program yapısı (dosya sırası)</summary>
+                        <div class="guide-body">
+                            <p>Öğrenciler yukarıdaki bölümleri okuduktan sonra aşağıdaki sırayı referans alabilir. Tam .ino dosyasında sıra kabaca şöyle:</p>
+                            <ol>
+                                <li>#include ve #define</li>
+                                <li>OLED sabitleri (OLED_ADDR, OLED_W, OLED_H, OLED_PAGES, WIRE_CHUNK)</li>
+                                <li>oledCmd → oledInit → oledClearPage → oledClear</li>
+                                <li>font5x7 dizisi (PROGMEM)</li>
+                                <li>charToIdx → oledDrawChar → oledPrint → oledPrintNum → oledPrintFloat</li>
+                                <li>GEIGER/GPS/SD pinleri, counts[], bufferIndex, totalCountsInWindow, uptimeSeconds, lastLogTime, pulseCount, lastInterruptTime</li>
+                                <li>geigerISR()</li>
+                                <li>TinyGPSPlus gps; SoftwareSerial gpsSerial(...)</li>
+                                <li>writeToSD(...)</li>
+                                <li>setup()</li>
+                                <li>loop()</li>
+                            </ol>
+                            <p>Font dizisi ve tüm OLED komutları proje klasöründeki <code>DroneMuller_Full.ino</code> dosyasında bulunur; bu sayfada mantık ve fonksiyon açıklamaları verilmiştir.</p>
                         </div>
                     </details>
 
