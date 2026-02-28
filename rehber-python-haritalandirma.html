@@ -178,6 +178,55 @@ print('drone_data_paper.json olusturuldu. Simdi generate_kml.py calistir.')</cod
                         </div>
                     </details>
 
+                    <details class="guide-accordion" open>
+                        <summary><strong>Projedeki tüm Python dosyaları ve kapsamları</strong></summary>
+                        <div class="guide-body">
+                            <p style="margin-bottom:1rem;">Aşağıda <code>drone_3b_haritalama</code> klasöründeki her Python dosyasının ne işe yaradığı, lise seviyesinde kısa ve net şekilde listelenmiştir. Kodların içinde de aynı açıklamalar Türkçe yorum olarak yer alır.</p>
+                            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                                <tr style="background:rgba(0,212,170,0.15);">
+                                    <th style="padding:0.5rem; text-align:left;">Dosya</th>
+                                    <th style="padding:0.5rem; text-align:left;">Kapsam (ne yapar?)</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>generate_kml.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">drone_data_paper.json dosyasını okur; her ölçüm noktası için renk belirler (düşük=mavi, yüksek=kırmızı) ve Google Earth’te açılabilecek bir .kml dosyası oluşturur.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>generate_rectangular_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">İHA’nın alanı “çim biçme” deseninde taradığını simüle eder (yukarı–sağa–aşağı…). Her noktada enlem, boylam, yükseklik, radyasyon, hız ve zaman üretir. Çıktı: drone_data.json, Simule_Edilmis_Veri_Sanko_Rect.xlsx.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>simulate_paper_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Tenis kortu gibi belirli bir çokgen içinde ızgara noktaları üretir; birden fazla yükseklikte (2–30 m) ölçüm simüle eder. Radyasyon “ters kare yasası” ve iki sanal kaynak ile hesaplanır. Çıktı: drone_data_paper.json, Radyasyon Veri Seti ve Analiz Önerileri.xlsx.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>prepare_qgis_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">drone_data_paper.json’u okur; sütun isimlerini QGIS uyumlu İngilizce yapar ve qgis_data.csv olarak kaydeder. QGIS’te nokta katmanı olarak açılabilir.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>map_data_to_court.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Excel’deki veriyi okur; koordinatları gerekirse düzeltir ve veriyi tenis kortu merkezine taşır. Eksik Zaman/Hız/Yükseklik/Doz sütunlarını simüle eder veya ekler. Çıktı: drone_data.json.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>generate_red_field_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Sanko’daki “kırmızı saha” için dikdörtgen tarama simülasyonu (generate_rectangular_data ile aynı mantık; alan ve merkez farklı). Çıktı: drone_data.json, Simule_Edilmis_Veri_Sanko_Kirmizi.xlsx.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>relocate_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Excel verisini okur; koordinatları normalize edip Sanko (Gaziantep) koordinatlarına taşır. Zaman ve Hız yoksa noktalar arası mesafeye göre simüle eder. Çıktı: drone_data.json, Simule_Edilmis_Veri_Sanko.xlsx.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>process_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Ham Excel verisini okur; enlem/boylamı gerekirse düzeltir. Zaman ve Hız sütunları yoksa mesafe (Haversine) ve simüle hız ile ekler. Çıktı: drone_data.json, Simule_Edilmis_Veri.xlsx.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2); vertical-align:top;"><code>inspect_data.py</code></td>
+                                    <td style="padding:0.5rem; border-bottom:1px solid rgba(0,212,170,0.2);">Radyasyon Veri Seti ve Analiz Önerileri.xlsx dosyasının var olup olmadığını kontrol eder; varsa sütun isimlerini ve ilk 5 satırı yazdırır. Veriyi işlemeden önce içeriği görmek için kullanılır.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </details>
+
                     <details class="guide-accordion">
                         <summary>Bu kodda neler var / neler yok?</summary>
                         <div class="guide-body">

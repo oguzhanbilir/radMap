@@ -41,11 +41,34 @@
             <div class="guide-grid">
                 <div class="guide-card guide-card-wide">
                     <h3>Programın genel akışı</h3>
-                    <p class="guide-desc">Bu sayfada <strong>her fonksiyon</strong> ve <strong>her kod bloğu</strong> ayrı ayrı açıklanmıştır. Sırayla okuyarak Geiger ölçümü, GPS (enlem, boylam, rakım), SD karta yazma ve OLED gösterme mantığını adım adım çalışabilirsiniz.</p>
+                    <p class="guide-desc">Bu rehber <strong>RadMap_Tam.ino</strong> dosyasını açıklar. Öğrenciler aşağıdaki bölümleri sırayla okuyarak her fonksiyonun ve her kod bloğunun ne işe yaradığını çalışabilir. Veriler <strong>LOG.csv</strong> dosyasına <strong>Tarih, Saat, Enlem, Boylam, CPM, uSv/h, Uydu</strong> sütunlarıyla yazılır.</p>
                     <ul>
                         <li><strong>setup()</strong> → Bir kez çalışır: pinler, kesme, OLED, SD kart hazırlanır.</li>
-                        <li><strong>loop()</strong> → Sürekli tekrarlanır: GPS okunur; her 1 saniyede CPM/µSv/h hesaplanır, SD’ye yazılır, OLED güncellenir.</li>
+                        <li><strong>loop()</strong> → Sürekli tekrarlanır: GPS okunur; her 1 saniyede CPM/µSv/h hesaplanır, LOG.csv’ye yazılır, OLED güncellenir.</li>
                     </ul>
+
+                    <details class="guide-accordion" open>
+                        <summary><strong>Hangi fonksiyon ne işe yarıyor? (Özet tablo)</strong></summary>
+                        <div class="guide-body">
+                            <table style="width:100%; border-collapse:collapse; font-size:0.9rem;">
+                                <tr style="background:rgba(0,212,170,0.15);"><th style="padding:0.4rem; text-align:left;">Fonksiyon</th><th style="padding:0.4rem; text-align:left;">Ne işe yarar?</th></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledCmd(c)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">OLED ekrana tek bir komut gönderir (I2C).</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledInit()</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Ekranı açar ve başlatır (A4=SDA, A5=SCL).</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledClearPage(page)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">OLED’in tek bir sayfasını (8 piksel yükseklik) siler.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledClear()</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Tüm ekranı siler.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>charToIdx(c)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Karakteri font indeksine çevirir (5x7 font için).</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledDrawChar(x, page, c)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Belirtilen konuma tek karakter çizer.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledPrint(x, page, s)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Metin (string) yazar.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>oledPrintNum(...)</code> / <code>oledPrintFloat(...)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Sayıyı ekrana yazar.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>geigerISR()</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Kesme fonksiyonu: Geiger her vuruşta D2 yükselince <code>pulseCount</code> artar.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>formatTarihSaat(bufTarih, bufSaat)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">GPS’ten tarih/saat alır; <strong>YYYY-MM-DD</strong> ve <strong>HH:MM:SS</strong> formatında doldurur. Uydu yoksa 2000-01-01, 00:00:00.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>writeToSD(cpm, usvh, lat, lng, uyduSayisi)</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">LOG.csv dosyasına bir satır yazar (başlık + Tarih, Saat, Enlem, Boylam, CPM, uSv/h, Uydu). <code>true</code>/<code>false</code> döner.</td></tr>
+                                <tr><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);"><code>setup()</code></td><td style="padding:0.35rem; border-bottom:1px solid rgba(0,212,170,0.2);">Bir kez: Serial, GPS seri, Geiger kesme, OLED, SD kart başlatılır.</td></tr>
+                                <tr><td style="padding:0.35rem;"><code>loop()</code></td><td style="padding:0.35rem;">Sürekli: GPS byte’ları okunur; her 1 saniyede CPM/µSv/h hesaplanır, GPS değerleri alınır, SD’ye yazılır, OLED ve Serial güncellenir. <code>gpsByteCount</code> ile GPS’ten veri gelip gelmediği kontrol edilir.</td></tr>
+                            </table>
+                            <p style="margin-top:0.75rem;"><strong>Önemli global değişkenler:</strong> <code>pulseCount</code> = kesmede artan Geiger vuruş sayısı; <code>counts[60]</code> = son 60 saniyenin her saniyedeki vuruşu (CPM hesabı); <code>bufferIndex</code>, <code>totalCountsInWindow</code>, <code>uptimeSeconds</code> = kayan pencere için; <code>sdOk</code> = SD kart başarıyla açıldı mı; <code>gpsByteCount</code> = son saniyede GPS’ten gelen byte sayısı (debug).</p>
+                        </div>
+                    </details>
 
                     <!-- ========== 1. KÜTÜPHANELER VE PIN TANIMLARI ========== -->
                     <details class="guide-accordion" open>
@@ -241,37 +264,52 @@ if (uptimeSeconds &lt; 60) {
                         </div>
                     </details>
 
-                    <!-- ========== 5. GPS VE writeToSD ========== -->
+                    <!-- ========== 5. GPS, formatTarihSaat VE writeToSD (LOG.csv) ========== -->
                     <details class="guide-accordion" open>
-                        <summary>5. GPS okuma ve SD karta yazma (writeToSD)</summary>
+                        <summary>5. GPS okuma, Tarih/Saat ve SD karta yazma (LOG.csv)</summary>
                         <div class="guide-body">
                             <h4>5.1 GPS nesneleri</h4>
-                            <pre class="code-block"><code>TinyGPSPlus gps;   // NMEA cümlelerini parse eder, .location.lat(), .location.lng(), .altitude.meters() verir
-SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);  // D3=RX, D4=TX — GPS modülüyle 9600 baud</code></pre>
+                            <p><strong>Ne işe yarar?</strong> <code>TinyGPSPlus gps</code> NMEA cümlelerini işleyip enlem, boylam, tarih, saat ve uydu sayısı verir. <code>SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN)</code> ile D3 (RX) ve D4 (TX) üzerinden 9600 baud ile konuşuruz. <strong>GPS modülünün TX pini Arduino D3’e (RX) bağlı olmalı.</strong></p>
+                            <pre class="code-block"><code>TinyGPSPlus gps;   // .location.lat(), .location.lng(), .date, .time, .satellites
+SoftwareSerial gpsSerial(GPS_RX_PIN, GPS_TX_PIN);  // D3=RX, D4=TX, 9600 baud</code></pre>
                             <h4>5.2 GPS verisini okumak (loop içinde sürekli)</h4>
-                            <p>GPS modülü sürekli NMEA cümleleri (örn. $GPGGA, $GPRMC) yollar. Her gelen byte’ı <code>gps.encode()</code> ile veririz; kütüphane içeride cümleleri birleştirir ve enlem, boylam, rakım güncellenir.</p>
+                            <p>GPS modülü NMEA cümleleri ($GPGGA, $GPRMC vb.) yollar. Her gelen byte <code>gps.encode()</code> ile kütüphaneye verilir; enlem, boylam, tarih, saat, uydu sayısı güncellenir. <strong>gpsByteCount</strong> her saniye kaç byte geldiğini sayar; Serial’da <code>GPS_byt: 0</code> görürsen kablo/pin (GPS TX→D3) kontrol et.</p>
                             <pre class="code-block"><code>while (gpsSerial.available()) {
-  gps.encode(gpsSerial.read());   // Bir byte oku, TinyGPS’e ver
+  gps.encode(gpsSerial.read());
+  gpsByteCount++;   // Debug: saniyede kaç byte geldiği
 }</code></pre>
-                            <h4>5.3 Enlem, boylam, rakım alma</h4>
-                            <pre class="code-block"><code>float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;  // Enlem (-90..90)
-float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;  // Boylam (-180..180)
-float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rakım (metre)</code></pre>
-                            <p><strong>isValid() neden önemli?</strong> Uydu kilidi yokken değerler anlamsız olur; geçerli mi diye kontrol ediyoruz.</p>
-                            <h4>5.4 writeToSD() — Fonksiyonun tam açıklaması</h4>
-                            <p><strong>Ne yapar?</strong> log.txt dosyasını açar (yoksa oluşturur), tek satır yazar: zaman, CPM, µSv/h, enlem, boylam, rakım — virgülle ayrılmış (CSV). Sonra dosyayı kapatır.</p>
-                            <pre class="code-block"><code>void writeToSD(uint32_t cpm, float usvh, float lat, float lng, float alt) {
-  File f = SD.open("log.txt", FILE_WRITE);  // Dosyayı yazma modunda aç (sonuna ekleme)
-  if (!f) return;   // Açılamadıysa (SD yok / hata) çık
-
-  f.print(millis()); f.print(",");   // Açılıştan beri geçen ms
-  f.print(cpm); f.print(",");        // CPM
-  f.print(usvh, 3); f.print(",");   // µSv/h (3 ondalık)
-  f.print(lat, 6); f.print(",");    // Enlem (6 ondalık)
-  f.print(lng, 6); f.print(",");    // Boylam (6 ondalık)
-  f.println(alt, 2);                 // Rakım (2 ondalık) + satır sonu
-
-  f.close();   // Yazmayı bitir, dosyayı kapat
+                            <h4>5.3 Enlem, boylam, uydu sayısı alma</h4>
+                            <p>Konum ve uydu sayısı <code>isValid()</code> ile kontrol edilir; uydu kilidi yoksa 0 kullanılır.</p>
+                            <pre class="code-block"><code>float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;   // Enlem
+float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;   // Boylam
+uint8_t uyduSayisi = gps.satellites.isValid() ? (uint8_t)gps.satellites.value() : 0;  // Uydu</code></pre>
+                            <h4>5.4 formatTarihSaat(bufTarih, bufSaat) — Tarih ve saati metne çevirir</h4>
+                            <p><strong>Ne yapar?</strong> GPS’ten tarih ve saati alır; <strong>YYYY-MM-DD</strong> ve <strong>HH:MM:SS</strong> formatında iki karakter dizisine yazar. Uydu kilidi yoksa 2000-01-01 ve 00:00:00 kullanılır. LOG.csv’deki Tarih ve Saat sütunları bu fonksiyonla doldurulur.</p>
+                            <pre class="code-block"><code>void formatTarihSaat(char* bufTarih, char* bufSaat) {
+  int y = 2000, m = 1, d = 1, h = 0, mi = 0, s = 0;
+  if (gps.date.isValid()) { y = gps.date.year(); m = gps.date.month(); d = gps.date.day(); }
+  if (gps.time.isValid()) { h = gps.time.hour(); mi = gps.time.minute(); s = gps.time.second(); }
+  sprintf(bufTarih, "%04d-%02d-%02d", y, m, d);   // 2026-02-06
+  sprintf(bufSaat,  "%02d:%02d:%02d", h, mi, s);   // 11:15:38
+}</code></pre>
+                            <h4>5.5 writeToSD() — LOG.csv’ye bir satır yazar</h4>
+                            <p><strong>Ne yapar?</strong> <strong>LOG.csv</strong> dosyasını açar (yoksa oluşturur). Dosya boşsa önce başlık satırını yazar: <code>Tarih,Saat,Enlem,Boylam,CPM,uSv/h,Uydu</code>. Sonra her çağrıda bir veri satırı ekler: Tarih, Saat, Enlem, Boylam, CPM, uSv/h, Uydu. Yazım başarılıysa <code>true</code>, değilse <code>false</code> döner.</p>
+                            <pre class="code-block"><code>bool writeToSD(uint32_t cpm, float usvh, float lat, float lng, uint8_t uyduSayisi) {
+  File f = SD.open("LOG.csv", FILE_WRITE);
+  if (!f) return false;
+  if (f.size() == 0)   // İlk satır: başlık
+    f.println(F("Tarih,Saat,Enlem,Boylam,CPM,uSv/h,Uydu"));
+  char bufTarih[11], bufSaat[9];
+  formatTarihSaat(bufTarih, bufSaat);
+  f.print(bufTarih);  f.print(",");
+  f.print(bufSaat);   f.print(",");
+  f.print(lat, 6);   f.print(",");
+  f.print(lng, 6);   f.print(",");
+  f.print(cpm);      f.print(",");
+  f.print(usvh, 3);  f.print(",");
+  f.println(uyduSayisi);
+  f.close();
+  return true;
 }</code></pre>
                         </div>
                     </details>
@@ -290,10 +328,11 @@ float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rak
 
   oledInit();                   // I2C ve OLED komutları ile ekranı aç
   oledClear();                  // Ekranı temizle
-  oledPrint(0, 0, "DRONE MULLER");
+  oledPrint(0, 0, "RADMAP");
   oledPrint(0, 2, "Baslatiliyor...");   // Kullanıcıya mesaj
 
-  if (!SD.begin(SD_CS_PIN)) {   // SD kartı D10 (CS) ile başlat
+  for (uint8_t i = 0; i &lt; 5; i++) { sdOk = SD.begin(SD_CS_PIN); if (sdOk) break; delay(300); }
+  if (!sdOk) {   // SD kartı D10 (CS) ile başlat
     oledPrint(0, 4, "SD HATA!");       // Başarısızsa uyarı
     delay(2000);
   }
@@ -310,11 +349,12 @@ float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rak
                         <summary>7. loop() — Ana döngü (blok blok)</summary>
                         <div class="guide-body">
                             <p><strong>loop()</strong> sürekli tekrarlanır. İki ana iş var: (1) GPS’ten gelen her byte’ı işlemek, (2) her 1 saniyede bir ölçüm yapıp SD’ye yazmak ve ekranı güncellemek.</p>
-                            <p class="code-caption">Blok 1: GPS verisini işle</p>
+                            <p class="code-caption">Blok 1: GPS verisini işle (+ gpsByteCount)</p>
                             <pre class="code-block"><code>while (gpsSerial.available()) {
   gps.encode(gpsSerial.read());
+  gpsByteCount++;   // Saniyede kaç byte geldiği — Serial’da GPS_byt olarak görünür
 }</code></pre>
-                            <p>Bu blok her loop’ta çalışır; gelen byte kalmayana kadar okur. Böylece NMEA cümleleri yarıda kalmaz.</p>
+                            <p>Bu blok her loop’ta çalışır; gelen byte kalmayana kadar okur. <code>GPS_byt: 0</code> ise GPS TX→D3 bağlantısını kontrol et.</p>
                             <p class="code-caption">Blok 2: 1 saniye doldu mu kontrol et</p>
                             <pre class="code-block"><code>if (millis() - lastLogTime &gt;= 1000) {
   lastLogTime = millis();   // Bir sonraki 1 sn için zamanı kaydet
@@ -337,31 +377,35 @@ float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rak
     cpm = totalCountsInWindow;
   }
   float usvh = cpm * 0.00812;</code></pre>
-                            <p class="code-caption">Blok 5: GPS değerlerini al</p>
+                            <p class="code-caption">Blok 5: GPS değerlerini al (Enlem, Boylam, Uydu)</p>
                             <pre class="code-block"><code>  float lat = gps.location.isValid() ? (float)gps.location.lat() : 0.0f;
   float lng = gps.location.isValid() ? (float)gps.location.lng() : 0.0f;
-  float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f;</code></pre>
-                            <p class="code-caption">Blok 6: SD karta yaz (ve Serial’e debug)</p>
-                            <pre class="code-block"><code>  writeToSD(cpm, usvh, lat, lng, alt);   // CSV satırı ekle
+  uint8_t uyduSayisi = gps.satellites.isValid() ? (uint8_t)gps.satellites.value() : 0;</code></pre>
+                            <p class="code-caption">Blok 6: LOG.csv’ye yaz, Serial’da Enlem/Boylam/Uydu ve GPS_byt göster</p>
+                            <pre class="code-block"><code>  if (sdOk) sdWritten = writeToSD(cpm, usvh, lat, lng, uyduSayisi);
 
   Serial.print(F("CPM:")); Serial.print(cpm);
   Serial.print(F(" uSv/h:")); Serial.print(usvh, 3);
-  Serial.print(F(" Lat:")); Serial.print(lat, 6);
-  Serial.print(F(" Lng:")); Serial.println(lng, 6);</code></pre>
-                            <p class="code-caption">Blok 7: OLED’i güncelle</p>
+  Serial.print(F(" Enlem:")); Serial.print(lat, 6);
+  Serial.print(F(" Boylam:")); Serial.print(lng, 6);
+  Serial.print(F(" Uydu:")); Serial.print(uyduSayisi);
+  Serial.print(F(" | GPS_byt:")); Serial.print(gpsByteCount);
+  Serial.print(F(" | SD:")); Serial.println(sdWritten ? F("OK") : F("HATA"));
+  gpsByteCount = 0;</code></pre>
+                            <p class="code-caption">Blok 7: OLED’i güncelle (RADMAP, CPM, uSv/h, GPS durumu, SDOK/SD--)</p>
                             <pre class="code-block"><code>  oledClear();
-  oledPrint(0, 0, "DRONE MULLER");
+  oledPrint(0, 0, "RADMAP");
   oledPrint(0, 2, "CPM: ");
-  oledPrintNum(30, 2, cpm);
+  oledPrintNum(36, 2, cpm);
   oledPrint(0, 4, "uSv/h: ");
   oledPrintFloat(42, 4, usvh, 3);
-  if (gps.location.isValid())
-    oledPrint(0, 6, "GPS OK");
-  else
-    oledPrint(0, 6, "GPS bekleniyor");
+  oledPrint(0, 6, gps.location.isValid() ? "GPS OK" : "GPS...");
+  if (!sdOk) oledPrint(70, 6, "SD--");
+  else if (sdWritten) oledPrint(70, 6, "SDOK");
+  else oledPrint(70, 6, "SD!!");
 }
 // if (millis() - lastLogTime >= 1000) sonu</code></pre>
-                            <p>Yani her saniye: sayacı oku → CPM/µSv/h hesapla → GPS’ten lat/lng/alt al → SD’ye yaz → ekranda göster.</p>
+                            <p>Özet: Her saniye sayacı oku → CPM/µSv/h hesapla → Enlem, Boylam, Uydu al → LOG.csv’ye yaz → Serial ve OLED güncelle; <code>gpsByteCount</code> sıfırlanır.</p>
                         </div>
                     </details>
 
@@ -379,11 +423,11 @@ float alt = gps.altitude.isValid() ? (float)gps.altitude.meters() : 0.0f; // Rak
                                 <li>GEIGER/GPS/SD pinleri, counts[], bufferIndex, totalCountsInWindow, uptimeSeconds, lastLogTime, pulseCount, lastInterruptTime</li>
                                 <li>geigerISR()</li>
                                 <li>TinyGPSPlus gps; SoftwareSerial gpsSerial(...)</li>
-                                <li>writeToSD(...)</li>
+                                <li>formatTarihSaat(), writeToSD(...) → LOG.csv</li>
                                 <li>setup()</li>
                                 <li>loop()</li>
                             </ol>
-                            <p>Font dizisi ve tüm OLED komutları proje klasöründeki <code>DroneMuller_Full.ino</code> dosyasında bulunur; bu sayfada mantık ve fonksiyon açıklamaları verilmiştir.</p>
+                            <p>Tam kod proje klasöründeki <strong>RadMap_Tam.ino</strong> dosyasındadır; bu rehberde her fonksiyonun ve döngünün ne işe yaradığı özetlenmiştir.</p>
                         </div>
                     </details>
 
