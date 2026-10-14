@@ -2,6 +2,8 @@
 
 Codeavour 7.0 Track 1 – Proje web sitesi. Rapor verilerine dayalı kapsamlı sunum.
 
+Proje danışmanı: Oğuzhan Bilir.
+
 ## Sayfalar
 
 | Sayfa | İçerik |
