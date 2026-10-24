@@ -1,39 +1,42 @@
-# RadMap – Drone Tabanlı 3B Radyasyon Haritalama Sistemi
+English | [Türkçe](README.tr.md)
 
-Codeavour 7.0 Track 1 – Proje web sitesi. Rapor verilerine dayalı kapsamlı sunum.
+# RadMap: drone-based 3D radiation mapping
 
-Proje danışmanı: Oğuzhan Bilir.
+A Geiger-Müller counter mounted on a drone logs radiation readings with GPS coordinates. The readings are then turned into a 3D map of an area. This repo is the project website, built from the project report.
 
-## Sayfalar
+**Codeavour 7.0** · 3rd in Turkey (Feb 2026) · **Samsung Solve for Tomorrow 2026** · Finalist · **TÜBİTAK 2204-A** · Invited to the regional exhibition
 
-| Sayfa | İçerik |
-|-------|--------|
-| **Ana Sayfa** | Proje özeti, drone tamamlanmış hali, ölçüm özeti, 3B haritalandırma galerisi |
-| **Malzemeler** | Arduino Nano, PCE-RAM10 Geiger-Müller, OLED, GPS, SD kart, muhafaza kutusu, DJI Avata 2 |
-| **Proje Süreci** | 7 aşamalı gelişim süreci, proje görüntüleri |
-| **Ölçüm Sonuçları** | Arka plan, açık alan, kapalı alan tabloları, mesafe grafikleri, Nükleer Tıp doğrulaması |
-| **Takım** | Neda, Günseli, Ekin, danışman Oğuzhan Bilir |
-| **Proje Çıktıları** | Teknik çıktılar, hedeflenen katılımlar, SDG |
+Live site: https://oguzhanbilir.github.io/radMap/
 
-## Görsel Klasör Yapısı
+<p align="center">
+  <img src="images/drone/dji%20mavic%203%20pro%20ile%20bitmi%C5%9F%20devrenin%20u%C3%A7u%C5%9F%20g%C3%B6r%C3%BCnt%C3%BCs%C3%BC%201.JPG" width="420" alt="Drone in flight with the measurement circuit attached" />
+  <img src="images/drone/dji%20mavic%203%20pro%20modeli%20ile%20devre%20haz%C4%B1r%20hali.JPG" width="420" alt="Measurement circuit mounted on the drone" />
+</p>
 
-```
-images/
-├── components/     # nano.jpeg, geiger.jpg, oled.jpg, gps.jpg, sd-kart.jpg, muhafaza-kutusu.jpg
-├── drone/          # drone-tamamlanmis.jpg, drone-ust-gorunum.jpg, drone-yan-gorunum.jpg, drone-acik-alan.jpg, dji-avata-2.jpg
-├── 3b-harita/      # google-earth-olcum-noktalari.jpg, drone-rota-gorunum.jpg, kapali-alan-grafik.jpg, mesafe-cpm-grafik.jpg, mesafe-usvh-grafik.jpg, arka-plan-dagilim.jpg
-└── proje/          # devre-kurulum.jpg, devre-semasi.jpg, drone-montaj.jpg, saha-olcum.jpg, bodrum-olcum.jpg, nukleer-tip.jpg, pictoblox.jpg
-```
+## How it works
 
-Her klasörde README.txt ile dosya adları listelenmiştir. Görselleri hazırladıkça ilgili klasöre ekleyin.
+- Arduino Nano reads the Geiger-Müller tube (PCE-RAM10 used as a reference meter), with an OLED display, GPS module and microSD logging
+- The board is mounted on a DJI drone and flown over a grid of measurement points
+- Logged CPM and µSv/h values are processed in Python and visualised as a 3D map
+- Readings were cross-checked indoors, outdoors and against a nuclear medicine reference measurement
 
-## Yayınlama
+## Site pages
 
-- **Yerel:** `index.html` dosyasına çift tıklayın
-- **GitHub Pages:** Repo → Settings → Pages → main branch
-- **Google Sites:** İçeriği kopyalayıp yapıştırın
+| Page | Content |
+|------|---------|
+| `index.html` | Overview, finished drone, measurement summary, 3D map gallery |
+| `malzemeler.html` | Hardware list |
+| `proje.html` | Development process in 7 stages |
+| `olcum-sonuclari.html` | Background, open area and indoor measurement tables, distance charts |
+| `rehberler.html` | Step-by-step guides: Arduino circuit, PictoBlox, Python mapping, 3D mapping |
+| `takim.html` | Team |
 
-## Özelleştirme
+The site content is in Turkish.
 
-- **Renkler:** `style.css` → `:root` değişkenleri
-- **İçerik:** HTML dosyalarındaki metinler
+## Running locally
+
+Open `index.html` in a browser. No build step. Colours live in the `:root` variables in `style.css`.
+
+## Credits
+
+Student research project. Advisor and developer of the website: Oğuzhan Bilir.
