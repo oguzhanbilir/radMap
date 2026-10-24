@@ -1,5 +1,7 @@
 Türkçe | [English](README.md)
 
+[![Site check](https://github.com/oguzhanbilir/radMap/actions/workflows/check.yml/badge.svg)](https://github.com/oguzhanbilir/radMap/actions/workflows/check.yml)
+
 # RadMap: drone ile 3B radyasyon haritalama
 
 Drone'a takılan bir Geiger-Müller sayacı, radyasyon ölçümlerini GPS koordinatlarıyla birlikte kaydeder. Ölçümler daha sonra bölgenin 3B haritasına dönüştürülür. Bu depo, proje raporundan hazırlanan proje web sitesidir.
