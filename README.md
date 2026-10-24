@@ -1,5 +1,7 @@
 English | [Türkçe](README.tr.md)
 
+[![Site check](https://github.com/oguzhanbilir/radMap/actions/workflows/check.yml/badge.svg)](https://github.com/oguzhanbilir/radMap/actions/workflows/check.yml)
+
 # RadMap: drone-based 3D radiation mapping
 
 A Geiger-Müller counter mounted on a drone logs radiation readings with GPS coordinates. The readings are then turned into a 3D map of an area. This repo is the project website, built from the project report.
