@@ -32,7 +32,7 @@ Her sayfa için `index.html`, `takim.html`, `proje.html`, `portfolyo.html` dosya
 
 ### Takım
 - SANKODE Intelligence tanıtımı
-- Neda, Günseli, Ekin kartları
+- Üç takım üyesi kartı (isimsiz)
 - Danışman: Oğuzhan Bilir
 
 ### Proje Süreci

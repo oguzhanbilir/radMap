@@ -6,7 +6,7 @@ Türkçe | [English](README.md)
 
 Drone'a takılan bir Geiger-Müller sayacı, radyasyon ölçümlerini GPS koordinatlarıyla birlikte kaydeder. Ölçümler daha sonra bölgenin 3B haritasına dönüştürülür. Bu depo, proje raporundan hazırlanan proje web sitesidir.
 
-**Codeavour 7.0** · Türkiye 3.lüğü (Şubat 2026) · **Samsung Solve for Tomorrow 2026** · Finalist · **TÜBİTAK 2204-A** · Bölge sergisine davet
+**Codeavour 7.0** · Türkiye 3.lüğü, SANKODE Intelligence takımı (Şubat 2026) · **Samsung Solve for Tomorrow 2026** · Türkiye finalisti, GeigerTim takımı (final 30 Kasım 2026) · **TÜBİTAK 2204-A** · Adana bölge sergisine davet
 
 Site: https://oguzhanbilir.github.io/radMap/
 

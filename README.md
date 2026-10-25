@@ -6,7 +6,7 @@ English | [Türkçe](README.tr.md)
 
 A Geiger-Müller counter mounted on a drone logs radiation readings with GPS coordinates. The readings are then turned into a 3D map of an area. This repo is the project website, built from the project report.
 
-**Codeavour 7.0** · 3rd in Turkey (Feb 2026) · **Samsung Solve for Tomorrow 2026** · Finalist · **TÜBİTAK 2204-A** · Invited to the regional exhibition
+**Codeavour 7.0** · 3rd in Turkey, team SANKODE Intelligence (Feb 2026) · **Samsung Solve for Tomorrow 2026** · Turkey finalist, team GeigerTim (final on Nov 30, 2026) · **TÜBİTAK 2204-A** · Invited to the Adana regional exhibition
 
 Live site: https://oguzhanbilir.github.io/radMap/
 
